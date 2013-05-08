@@ -236,7 +236,7 @@ addOnloadHook(function(){jQuery(function($){
 				return $(data.whatlinkshere).find('#mw-whatlinkshere-list').find('li').length;
 			}
 		},
-		editors: {
+		editors:{
 			name:'Editor count',
 			init:function(data){
 				all_editors = data.history.match(/<li>.*<\/li>/g)
@@ -257,31 +257,52 @@ addOnloadHook(function(){jQuery(function($){
 			},
 			str:function(o){return o.total},	int:function(o){return o.total;},
 			info:function(o,view){
-				tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
+				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
 				for(i in o){
 					if(i in {}||!i.indexOf('total')) continue;
 					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],wgScript))
 				}
-				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'
-					.format(o.total,o.total_edits))
+				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'.format(o.total,o.total_edits))
 			},
 		},
-		length: {str:function(obj){
-			return "Weighted: {0} ({1} characters, {2} without templates)"
-				.format(obj.average,obj.full,obj.notemplate);},
-		name:'Source length'},
-		html_length:{name:'Text length',
-			str:function(o){return '{0} (HTML: {1})'.format(o.text,o.html)},
-			int:function(o){return o.text}},
-		verify:{name:'{{Verify}} tags',score:function(o){
-			if(o<1) return 0; if(o==1) return -10; return o*-20}},
+		length:{
+			name:'Article length',
+			init:function(data){
+				var a={
+					'full':data.raw.length,
+					'nospace':data.raw.replace(/\s/g,'').length,
+					'notemplate':data.raw.replace(/{{[^}]*?}}/g,'').length,
+					'plain':data.raw.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length,
+					'html':data.render.length,
+					'text':$(data.render).text().length
+				};
+				a.average=Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace * .3*a.text);
+				return a;
+			},
+			int:function(o){return o.average},
+			str:function(o){return o.average + ' (weighted)'},
+			info:function(o,view){
+				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">Article Length</th></tr>').addClass('wikitable').appendTo(view);
+				var descs={html:'Generated HTML', text:'Displayed text', full:'Wikitext', nospace:'Wikitext without spaces', notemplate:'Wikitext without templates', plain:'Wikitext without spaces and templates'}
+				for(i in o){if(!(i in descs))continue;
+					tbl.append('<tr><td>{0}</td><td>{1}</td></tr>'.format(descs[i],o[i]));
+				}
+			}
+		},
+		verify:{
+			name:'{{Verify}} tags',
+			init:function(data){
+				var m=data.raw.match(/{{verify/g);return +(m&&m.length);
+			},
+			score:function(o){if(o<1) return 0; if(o==1) return -10; return o*-20}
+		},
 		current_rating:{
 			name:'Current rating',
 			init:function(data){
 				m=data.raw.match(/{{quality[^}]*?}}/i);
 				return (m&&m.length&&m[0].slice(2,-2).split('|')[1])||'';
 			},
-			score:function(){return 0}
+			score:function(o){return [0,-15,0,10,20,40][rater.rating_arr.indexOf(o)+1]}
 		}
 	};
 	
@@ -292,6 +313,7 @@ addOnloadHook(function(){jQuery(function($){
 		exceptional:{id:4,color:{b:'#9df',bg:'#cce4ff',c:'#08c'},s:'\u2261'},
 		masterwork:{id:5,color:{b:'#bd8',bg:'#e2fdce',c:'#72a329'},s:'\u263c'}
 	};
+	rater.rating_arr=['tattered','fine','superior','exceptional','masterwork'];
 	
 	/* Stores the results of tests */
 	rater.tests={};
