@@ -22,6 +22,7 @@ addOnloadHook(function(){jQuery(function($){
 			e.preventDefault()
 	}
 	function is_func(x){return !!(x&&x.call)}
+	// Page-specific data
 	rater.page = {
 		name: wgPageName.replace(/_/g,' '),
 		ns:wgCanonicalNamespace||'Main',
