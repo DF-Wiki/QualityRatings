@@ -1,0 +1,9 @@
+# autosave
+*~
+
+# Mac stuff
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Icon?
