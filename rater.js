@@ -536,6 +536,7 @@ addOnloadHook(function(){jQuery(function($){
 	});
 	
 	rater.submit_rating=function(){
+		// Set up UI
 		rater.overlay.fadeIn(400);
 		rater.frame.change('submit-progress');
 		var view=rater.frame.current_frame();
@@ -544,48 +545,45 @@ addOnloadHook(function(){jQuery(function($){
 		rater.progress.view.appendTo(view);
 		var stat=$('<div>').css({'white-space':'pre'}).appendTo(view);
 		function w(s){stat.append(s);}
+		// Safety checks
 		var r=rater.select.current;
 		if(r in {}||!(r in rater.ratings)) return;
 		var rating=rater.select.current.capitalize();
 		if(!rater.loader.results.raw) return;
-		//get token
-		w('Retrieving token... ');
-		$.get(wgScriptPath+'/api.php?format=json&action=query&prop=info&indexpageids=1&intoken=edit&titles='+wgPageName,function(d){
-			rater.progress.update(1,4);
-			var token=d.query.pages[d.query.pageids[0]].edittoken;
-			w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,-2)));
-			console.log(token);
-			var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
-			text='{{Quality|'+rating+'|~~~~~}}\n'+text;
-			w('Ok\nEditing page... ');
-			var e=encodeURIComponent;
-			var page=rater.page.name;
-			rater.progress.update(2,4);
-			$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
-			token:token,minor:1,summary:'Rated article "{0}" using the rating script.'.format(rating)},function(d){
-				rater.progress.update(3,4);
-				w('Finished!\nUpdating...');
-				$.get(wgScriptPath+'/api.php',{
-					action:'parse',text:'{{Quality|'+rating+'|~~~~~}}',
-					format:'json',title:wgPageName},
-				function(d){
-					rater.progress.update(4,4);
-					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
-					// Replace categories
-					$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
-					var cats = d.parse.categories;
-					for(i=0;i<cats.length;i++){
-						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
-					}
-					
-					$('.catlinks li a:hidden').remove();
-					$('.catlinks li:empty').remove();
-					
-					rater.progress.update(5,4);
-					rater.cancel();
-				});
+		// Get token - most of these messages are left over
+		w('Getting token... ');
+		var token = mw.user.tokens.values.editToken;
+		rater.progress.update(1,4);
+		w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,8)));
+		console.log(token);
+		var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
+		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
+		w('Ok\nEditing page... ');
+		
+		rater.progress.update(2,4);
+		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
+		token:token,minor:1,summary:'Rated article "{0}" using the rating script.'.format(rating)},function(d){
+			rater.progress.update(3,4);
+			w('Finished!\nUpdating...');
+			// Parse {{quality}} with the new rating
+			$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
+			function(d){
+				rater.progress.update(4,4);
+				$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
+				// Replace categories
+				$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
+				var cats = d.parse.categories;
+				for(i=0;i<cats.length;i++){
+					$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
+				}
 				
+				$('.catlinks li a:hidden').remove();
+				$('.catlinks li:empty').remove();
+				
+				rater.progress.update(5,4);
+				rater.cancel();
 			});
+			
 		});
 	};
 	
