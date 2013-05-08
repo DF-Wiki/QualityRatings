@@ -223,21 +223,32 @@ addOnloadHook(function(){jQuery(function($){
 					if(link.match(/href=.*redlink=1/)) total_redlinks++;
 				});
 				return total_redlinks
+			},
+			score:function(o){
+				return o*-5 + 10;
 			}
 		},
 		links:{
 			name:'Outbound links',
 			init:function(data){
 				return $(data.render).find('a[href*="'+wgScript+'"]').length;
+			},
+			score:function(o){
+				if(o==0) return -25; //no links
+				return o; //1 point per link
 			}
 		},
 		linkshere:{
 			name:'Incoming links',
 			init:function(data){
 				return $(data.whatlinkshere).find('#mw-whatlinkshere-list').find('li').length;
+			},
+			score:function(o){
+				if(o==0) return -35; //orphaned
+				return o*2.5; //links here are good
 			}
 		},
-		editors: {
+		editors:{
 			name:'Editor count',
 			init:function(data){
 				all_editors = data.history.match(/<li>.*<\/li>/g)
@@ -258,31 +269,59 @@ addOnloadHook(function(){jQuery(function($){
 			},
 			str:function(o){return o.total},	int:function(o){return o.total;},
 			info:function(o,view){
-				tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
+				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
 				for(i in o){
 					if(i in {}||!i.indexOf('total')) continue;
 					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],wgScript))
 				}
-				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'
-					.format(o.total,o.total_edits))
+				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'.format(o.total,o.total_edits))
 			},
+			score:function(o){
+				var n=Math.max(1,Math.floor(o.total))
+				if(n==1) return 0;
+				if(n==2) return 6;
+				if(n==3) return 14;
+				return 20*n;
+			}
 		},
-		length: {str:function(obj){
-			return "Weighted: {0} ({1} characters, {2} without templates)"
-				.format(obj.average,obj.full,obj.notemplate);},
-		name:'Source length'},
-		html_length:{name:'Text length',
-			str:function(o){return '{0} (HTML: {1})'.format(o.text,o.html)},
-			int:function(o){return o.text}},
-		verify:{name:'{{Verify}} tags',score:function(o){
-			if(o<1) return 0; if(o==1) return -10; return o*-20}},
+		length:{
+			name:'Article length',
+			init:function(data){
+				var a={
+					'full':data.raw.length,
+					'nospace':data.raw.replace(/\s/g,'').length,
+					'notemplate':data.raw.replace(/{{[^}]*?}}/g,'').length,
+					'plain':data.raw.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length,
+					'html':data.render.length,
+					'text':$(data.render).text().length
+				};
+				a.average=Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace * .3*a.text);
+				return a;
+			},
+			int:function(o){return o.average},
+			str:function(o){return o.average + ' (weighted)'},
+			info:function(o,view){
+				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">Article Length</th></tr>').addClass('wikitable').appendTo(view);
+				var descs={html:'Generated HTML', text:'Displayed text', full:'Wikitext', nospace:'Wikitext without spaces', notemplate:'Wikitext without templates', plain:'Wikitext without spaces and templates'}
+				for(i in o){if(!(i in descs))continue;
+					tbl.append('<tr><td>{0}</td><td>{1}</td></tr>'.format(descs[i],o[i]));
+				}
+			}
+		},
+		verify:{
+			name:'{{Verify}} tags',
+			init:function(data){
+				var m=data.raw.match(/{{verify/g);return +(m&&m.length);
+			},
+			score:function(o){if(o<1) return 0; if(o==1) return -10; return o*-20}
+		},
 		current_rating:{
 			name:'Current rating',
 			init:function(data){
 				m=data.raw.match(/{{quality[^}]*?}}/i);
 				return (m&&m.length&&m[0].slice(2,-2).split('|')[1])||'';
 			},
-			score:function(){return 0}
+			score:function(o){return [0,-15,0,10,20,40][rater.rating_arr.indexOf(o)+1]}
 		}
 	};
 	
@@ -293,6 +332,7 @@ addOnloadHook(function(){jQuery(function($){
 		exceptional:{id:4,color:{b:'#9df',bg:'#cce4ff',c:'#08c'},s:'\u2261'},
 		masterwork:{id:5,color:{b:'#bd8',bg:'#e2fdce',c:'#72a329'},s:'\u263c'}
 	};
+	rater.rating_arr=['tattered','fine','superior','exceptional','masterwork'];
 	
 	/* Stores the results of tests */
 	rater.tests={};
@@ -329,7 +369,9 @@ addOnloadHook(function(){jQuery(function($){
 	
 	loader.all_complete = function(){
 		loader.event.trigger('done');
-		loader.total_tests=0; //reset
+		// Reset
+		loader.total_tests=0;
+		loader.event.off(); // Clear all events for another run
 	};
 	loader.add_callback=function(func){
 		//Compatibility: triggered on `done` event
@@ -381,69 +423,10 @@ addOnloadHook(function(){jQuery(function($){
 			loader.add(i, rater.metadata.urls[i]);
 		}
 		loader.event.bind('ready',function(e,d){rater.progress.update(d.total-d.left,d.total)});
-		rater.progress.view.appendTo(rater.box)
-		loader.event.bind('done', rater.process_tests)
-		loader.event.bind('done', rater.display_test_results)
-		loader.event.bind('done', rater.progress.reset)
-		/*
-		tests.add('redlinks', render_url, function(data){
-			all_links = data.match(/<a .*<\/a>/g);
-			if(!all_links) return 0; //no links
-			total_redlinks=0;
-			$.each(all_links, function(i,link){
-				if(link.match(/href=.*redlink=1/)) total_redlinks++;
-			});
-			return total_redlinks
-		});
-		tests.add('editors', rater.page.url+'&action=history&limit=100', function(data){
-			all_editors = data.match(/<li>.*<\/li>/g)
-			if(!all_editors) return 0; //no editors
-			editors={};
-			$.each(all_editors, function(i,li){
-				ed = $(li).find('.mw-userlink:nth(0)').text()
-				if(!(ed in editors)) editors[ed]=0;
-				editors[ed]++ 
-			});
-			num=0;
-			for(i in editors){
-				if(i in {}) continue;
-				num++
-			}
-			editors.total=num;editors.total_edits=all_editors.length;
-			return editors;
-		});
-		tests.add('linkshere', wgScript+'/Special:WhatLinksHere/'+wgPageName, function(data){
-			return $(data).find('#mw-whatlinkshere-list').length;
-		});
-		tests.add('links', render_url, function(data){
-			return $(data).find('a[href*="'+wgScript+'"]').length;
-		});
-		tests.add('length', raw_url, function(data){
-			rater.raw_text=data;
-			var a={
-				'full':data.length,
-				'nospace':data.replace(/\s/g,'').length,
-				'notemplate':data.replace(/{{[^}]*?}}/g,'').length,
-				'raw':data.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length
-			};
-			a.average=Math.round(.1 * a.full + .2*a.nospace + .3*a.notemplate + .4*a.raw)
-			return a
-		});
-		tests.add('html_length', render_url, function(data){
-			var a={'html':data.length,'text':$(data).text().length};
-			return a;
-		});
-		tests.add('verify',raw_url,function(data){
-			var m=data.match(/{{verify/g);return +(m&&m.length);
-		});
-		tests.add('current_rating',raw_url,function(data){
-			m=data.match(/{{quality[^}]*?}}/i);
-			return (m&&m.length&&m[0].slice(2,-2).split('|')[1])||''
-		});
-		tests.add_callback(function(){
-			rater.display_test_results();
-		});
-		*/
+		rater.progress.view.appendTo(rater.box);
+		loader.event.bind('done', rater.process_tests);
+		loader.event.bind('done', rater.display_test_results);
+		loader.event.bind('done', rater.progress.reset);
 	};
 	
 	rater.score_bool=function(v,y,n){
@@ -469,30 +452,24 @@ addOnloadHook(function(){jQuery(function($){
 		var md=rater.metadata.tests;
 		rater.box.clear();
 		data=rater.tests;
+		rater.score=0;
 		for(var i in data){
 			name=md[i].name;
 			str=is_func(md[i].str)?md[i].str(data[i]):data[i];
-			app=''
+			append='';
 			if(is_func(md[i].info)){
-				app=$('<a href="#">[Info]</a>').data({f:md[i].info,d:data[i]})
+				append=$('<a href="#">[Info]</a>').data({f:md[i].info,d:data[i]})
 				.click(function(e){d=$(this).data()
 					rater.popup.clear();	rater.popup_show(e);
 					d.f(d.d,rater.popup.box.append($("<div>")))
 				}).css('padding-left','1em');
 			}
-			rater.box.append($("<p>"+name+": "+str+"</p>").append(app));
+			rater.box.append($("<p>"+name+": "+str+"</p>").append(append));
+			if(is_func(md[i].score)){
+				rater.score += Number(md[i].score(data[i]))
+			}
 		}
 		
-		
-		rater.score = 0
-			+rater.score_bool(!data.links,-25) 		//orphaned
-			+rater.score_bool(!data.linkshere,-30) 	//dead end
-			+rater.score_int(data.links,0.5)
-			+rater.score_int(data.linkshere,0.75)
-			+rater.score_int(data.redlinks,-5,10)
-			+rater.score_int(data.editors.total,20,-15)
-			
-		;
 		rater.box.append($("<p>").text("Score: "+rater.score))
 		//rater.select.init($("<div>").appendTo(rater.box));
 		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'3em',right:'1.5em'})
@@ -560,6 +537,7 @@ addOnloadHook(function(){jQuery(function($){
 	});
 	
 	rater.submit_rating=function(){
+		// Set up UI
 		rater.overlay.fadeIn(400);
 		rater.frame.change('submit-progress');
 		var view=rater.frame.current_frame();
@@ -568,48 +546,45 @@ addOnloadHook(function(){jQuery(function($){
 		rater.progress.view.appendTo(view);
 		var stat=$('<div>').css({'white-space':'pre'}).appendTo(view);
 		function w(s){stat.append(s);}
+		// Safety checks
 		var r=rater.select.current;
 		if(r in {}||!(r in rater.ratings)) return;
 		var rating=rater.select.current.capitalize();
 		if(!rater.loader.results.raw) return;
-		//get token
-		w('Retrieving token... ');
-		$.get(wgScriptPath+'/api.php?format=json&action=query&prop=info&indexpageids=1&intoken=edit&titles='+wgPageName,function(d){
-			rater.progress.update(1,4);
-			var token=d.query.pages[d.query.pageids[0]].edittoken;
-			w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,-2)));
-			console.log(token);
-			var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
-			text='{{Quality|'+rating+'|~~~~~}}\n'+text;
-			w('Ok\nEditing page... ');
-			var e=encodeURIComponent;
-			var page=rater.page.name;
-			rater.progress.update(2,4);
-			$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
-			token:token,minor:1,summary:'Rated article "{0}" using the rating script.'.format(rating)},function(d){
-				rater.progress.update(3,4);
-				w('Finished!\nUpdating...');
-				$.get(wgScriptPath+'/api.php',{
-					action:'parse',text:'{{Quality|'+rating+'|~~~~~}}',
-					format:'json',title:wgPageName},
-				function(d){
-					rater.progress.update(4,4);
-					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
-					// Replace categories
-					$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
-					var cats = d.parse.categories;
-					for(i=0;i<cats.length;i++){
-						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
-					}
-					
-					$('.catlinks li a:hidden').remove();
-					$('.catlinks li:empty').remove();
-					
-					rater.progress.update(5,4);
-					rater.cancel();
-				});
+		// Get token - most of these messages are left over
+		w('Getting token... ');
+		var token = mw.user.tokens.values.editToken;
+		rater.progress.update(1,4);
+		w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,8)));
+		console.log(token);
+		var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
+		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
+		w('Ok\nEditing page... ');
+		
+		rater.progress.update(2,4);
+		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
+		token:token,minor:1,summary:'Rated article "{0}" using the rating script.'.format(rating)},function(d){
+			rater.progress.update(3,4);
+			w('Finished!\nUpdating...');
+			// Parse {{quality}} with the new rating
+			$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
+			function(d){
+				rater.progress.update(4,4);
+				$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
+				// Replace categories
+				$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
+				var cats = d.parse.categories;
+				for(i=0;i<cats.length;i++){
+					$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
+				}
 				
+				$('.catlinks li a:hidden').remove();
+				$('.catlinks li:empty').remove();
+				
+				rater.progress.update(5,4);
+				rater.cancel();
 			});
+			
 		});
 	};
 	
