@@ -550,6 +550,7 @@ addOnloadHook(function(){jQuery(function($){
 		var r=rater.select.current;
 		if(r in {}||!(r in rater.ratings)) return;
 		var rating=rater.select.current.capitalize();
+		var old_rating=rater.tests.current_rating.capitalize();
 		if(!rater.loader.results.raw) return;
 		// Get token - most of these messages are left over
 		w('Getting token... ');
@@ -561,9 +562,11 @@ addOnloadHook(function(){jQuery(function($){
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		
+		summary='Changed article rating from "{0}" to "{1}" (using the rating script)'.format(old_rating||'(None)',rating)
+		
 		rater.progress.update(2,4);
 		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
-		token:token,minor:1,summary:'Rated article "{0}" using the rating script.'.format(rating)},function(d){
+		token:token,minor:1,summary:summary},function(d){
 			rater.progress.update(3,4);
 			w('Finished!\nUpdating...');
 			// Parse {{quality}} with the new rating
