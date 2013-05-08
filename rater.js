@@ -402,69 +402,10 @@ addOnloadHook(function(){jQuery(function($){
 			loader.add(i, rater.metadata.urls[i]);
 		}
 		loader.event.bind('ready',function(e,d){rater.progress.update(d.total-d.left,d.total)});
-		rater.progress.view.appendTo(rater.box)
-		loader.event.bind('done', rater.process_tests)
-		loader.event.bind('done', rater.display_test_results)
-		loader.event.bind('done', rater.progress.reset)
-		/*
-		tests.add('redlinks', render_url, function(data){
-			all_links = data.match(/<a .*<\/a>/g);
-			if(!all_links) return 0; //no links
-			total_redlinks=0;
-			$.each(all_links, function(i,link){
-				if(link.match(/href=.*redlink=1/)) total_redlinks++;
-			});
-			return total_redlinks
-		});
-		tests.add('editors', rater.page.url+'&action=history&limit=100', function(data){
-			all_editors = data.match(/<li>.*<\/li>/g)
-			if(!all_editors) return 0; //no editors
-			editors={};
-			$.each(all_editors, function(i,li){
-				ed = $(li).find('.mw-userlink:nth(0)').text()
-				if(!(ed in editors)) editors[ed]=0;
-				editors[ed]++ 
-			});
-			num=0;
-			for(i in editors){
-				if(i in {}) continue;
-				num++
-			}
-			editors.total=num;editors.total_edits=all_editors.length;
-			return editors;
-		});
-		tests.add('linkshere', wgScript+'/Special:WhatLinksHere/'+wgPageName, function(data){
-			return $(data).find('#mw-whatlinkshere-list').length;
-		});
-		tests.add('links', render_url, function(data){
-			return $(data).find('a[href*="'+wgScript+'"]').length;
-		});
-		tests.add('length', raw_url, function(data){
-			rater.raw_text=data;
-			var a={
-				'full':data.length,
-				'nospace':data.replace(/\s/g,'').length,
-				'notemplate':data.replace(/{{[^}]*?}}/g,'').length,
-				'raw':data.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length
-			};
-			a.average=Math.round(.1 * a.full + .2*a.nospace + .3*a.notemplate + .4*a.raw)
-			return a
-		});
-		tests.add('html_length', render_url, function(data){
-			var a={'html':data.length,'text':$(data).text().length};
-			return a;
-		});
-		tests.add('verify',raw_url,function(data){
-			var m=data.match(/{{verify/g);return +(m&&m.length);
-		});
-		tests.add('current_rating',raw_url,function(data){
-			m=data.match(/{{quality[^}]*?}}/i);
-			return (m&&m.length&&m[0].slice(2,-2).split('|')[1])||''
-		});
-		tests.add_callback(function(){
-			rater.display_test_results();
-		});
-		*/
+		rater.progress.view.appendTo(rater.box);
+		loader.event.bind('done', rater.process_tests);
+		loader.event.bind('done', rater.display_test_results);
+		loader.event.bind('done', rater.progress.reset);
 	};
 	
 	rater.score_bool=function(v,y,n){
