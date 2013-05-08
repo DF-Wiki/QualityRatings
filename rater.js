@@ -222,18 +222,29 @@ addOnloadHook(function(){jQuery(function($){
 					if(link.match(/href=.*redlink=1/)) total_redlinks++;
 				});
 				return total_redlinks
+			},
+			score:function(o){
+				return o*-5 + 10;
 			}
 		},
 		links:{
 			name:'Outbound links',
 			init:function(data){
 				return $(data.render).find('a[href*="'+wgScript+'"]').length;
+			},
+			score:function(o){
+				if(o==0) return -25; //no links
+				return o; //1 point per link
 			}
 		},
 		linkshere:{
 			name:'Incoming links',
 			init:function(data){
 				return $(data.whatlinkshere).find('#mw-whatlinkshere-list').find('li').length;
+			},
+			score:function(o){
+				if(o==0) return -35; //orphaned
+				return o*2.5; //links here are good
 			}
 		},
 		editors:{
@@ -264,6 +275,13 @@ addOnloadHook(function(){jQuery(function($){
 				}
 				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'.format(o.total,o.total_edits))
 			},
+			score:function(o){
+				var n=Math.max(1,Math.floor(o.total))
+				if(n==1) return 0;
+				if(n==2) return 6;
+				if(n==3) return 14;
+				return 20*n;
+			}
 		},
 		length:{
 			name:'Article length',
@@ -350,7 +368,9 @@ addOnloadHook(function(){jQuery(function($){
 	
 	loader.all_complete = function(){
 		loader.event.trigger('done');
-		loader.total_tests=0; //reset
+		// Reset
+		loader.total_tests=0;
+		loader.event.off(); // Clear all events for another run
 	};
 	loader.add_callback=function(func){
 		//Compatibility: triggered on `done` event
@@ -431,30 +451,24 @@ addOnloadHook(function(){jQuery(function($){
 		var md=rater.metadata.tests;
 		rater.box.clear();
 		data=rater.tests;
+		rater.score=0;
 		for(var i in data){
 			name=md[i].name;
 			str=is_func(md[i].str)?md[i].str(data[i]):data[i];
-			app=''
+			append='';
 			if(is_func(md[i].info)){
-				app=$('<a href="#">[Info]</a>').data({f:md[i].info,d:data[i]})
+				append=$('<a href="#">[Info]</a>').data({f:md[i].info,d:data[i]})
 				.click(function(e){d=$(this).data()
 					rater.popup.clear();	rater.popup_show(e);
 					d.f(d.d,rater.popup.box.append($("<div>")))
 				}).css('padding-left','1em');
 			}
-			rater.box.append($("<p>"+name+": "+str+"</p>").append(app));
+			rater.box.append($("<p>"+name+": "+str+"</p>").append(append));
+			if(is_func(md[i].score)){
+				rater.score += Number(md[i].score(data[i]))
+			}
 		}
 		
-		
-		rater.score = 0
-			+rater.score_bool(!data.links,-25) 		//orphaned
-			+rater.score_bool(!data.linkshere,-30) 	//dead end
-			+rater.score_int(data.links,0.5)
-			+rater.score_int(data.linkshere,0.75)
-			+rater.score_int(data.redlinks,-5,10)
-			+rater.score_int(data.editors.total,20,-15)
-			
-		;
 		rater.box.append($("<p>").text("Score: "+rater.score))
 		//rater.select.init($("<div>").appendTo(rater.box));
 		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'3em',right:'1.5em'})
