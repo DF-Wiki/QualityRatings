@@ -607,7 +607,7 @@ addOnloadHook(function(){jQuery(function($){
 	}
 	
 	//export
-	rater.loader=loader;	window.rater=rater;return rater;
+	rater.loader=loader;window.rater=rater;return rater;
 });});
 // </nowiki>
 
