@@ -190,16 +190,44 @@ addOnloadHook(function(){jQuery(function($){
 	Extra/advanced options - deleting template, mark as "Unrated", etc.
 	*/
 	rater.nonstd={};
+	
+	rater.nonstd.metadata={
+		'rm-quality':{
+			desc: 'Remove the quality rating',
+			process: function(data){
+				return data.replace(/{{quality[^}]*?}}\n*/gi,'');
+			}
+		},
+		'mark-unrated':{
+			desc: 'Mark as unrated',
+			process: function(data){
+				return data.replace(/{{quality[^}]*?}}\n*/gi,'{{quality|Unrated|~~~~~}}\n');
+			}
+		}
+	};
+	
 	// Set up UI
 	rater.frame.change('nonstd')
 	rater.nonstd.view=rater.frame.list.nonstd
 	rater.frame.change('main')
 	
 	rater.nonstd.init=function(e){PD(e);
+		rater.frame.change('nonstd');
 		var v=rater.nonstd.view;
 		v.html('').append('<h2>Advanced options</h2>');
 		v.append(rater.nonstd.cancel_link);
+		var md=rater.nonstd.metadata, ul=$('<ul>').appendTo(v);
+		for(var i in md){if(i in {}) continue;
+			var a=$('<a>').text(md[i].desc).attr('href','#rater-nonstd-select').data('opt',i)
+			ul.append($("<li>").append(a));
+		}
 	};
+	rater.nonstd.select=function(e){PD(e);
+		var opt=$(this).data('opt'),md=rater.nonstd.metadata;
+		var new_text = md[opt].process(rater.loader.results.raw);
+		console.log(new_text);
+	};
+	
 	rater.nonstd.cancel=function(e){PD(e);
 		rater.frame.change('main');
 	};
@@ -208,7 +236,8 @@ addOnloadHook(function(){jQuery(function($){
 	$('body')
 		.on('click','a[href=#rater-nonstd-init]', rater.nonstd.init)
 		.on('click','a[href=#rater-nonstd-cancel]', rater.nonstd.cancel)
-	
+		.on('click','a[href=#rater-nonstd-select]', rater.nonstd.select)
+	rater.event.bind('results-displayed', function(){rater.nonstd.init_link.appendTo(rater.box)})
 	
 	/*
 	Decriptions of URLs, tests, etc.
@@ -500,6 +529,8 @@ addOnloadHook(function(){jQuery(function($){
 		rater.box.append($("<p>").text("Score: "+rater.score))
 		//rater.select.init($("<div>").appendTo(rater.box));
 		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'1em',right:'0'})
+		
+		rater.event.trigger('results-displayed')
 	};
 	rater.select={};
 	rater.select.view=$("<div>").css({padding:'.2em'});
