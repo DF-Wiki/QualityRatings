@@ -128,7 +128,7 @@ addOnloadHook(function(){jQuery(function($){
 	rater.frame.change=function(name){
 		if(rater.frame.current) $('.rater-frame').hide().css({margin:'1em'});
 		if(!(name in rater.frame.list)){
-			rater.frame.list[name]=$('<div>').addClass('rater-frame').css({margin:'1em'});
+			rater.frame.list[name]=$('<div>').addClass('rater-frame').css({margin:'1em',position:'relative'});
 		}
 		rater.frame.list[name].appendTo(rater.win.inner).show();
 		rater.frame.current=name;
@@ -472,7 +472,7 @@ addOnloadHook(function(){jQuery(function($){
 		
 		rater.box.append($("<p>").text("Score: "+rater.score))
 		//rater.select.init($("<div>").appendTo(rater.box));
-		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'3em',right:'1.5em'})
+		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'1em',right:'0'})
 	};
 	rater.select={};
 	rater.select.view=$("<div>").css({padding:'.2em'});
