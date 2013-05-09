@@ -586,6 +586,7 @@ addOnloadHook(function(){jQuery(function($){
 				
 				rater.progress.update(5,4);
 				rater.cancel();
+				jsMsg('Rated article <b>'+rating+'</b>');
 			});
 			
 		});
@@ -601,9 +602,6 @@ addOnloadHook(function(){jQuery(function($){
 	for(var i=0;i<rater.qs_list.length;i++){
 		var v=rater.qs_list[i].split('=');
 		rater.qs[v[0]]=v[1]
-	}
-	if(rater.qs.rated=='success'){
-		jsMsg('Rated article <b>'+rater.qs.rating+'</b>')
 	}
 	
 	//export
