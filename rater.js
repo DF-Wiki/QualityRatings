@@ -185,6 +185,30 @@ addOnloadHook(function(){jQuery(function($){
 	$('body').on('click', 'a[href=#rater-invoke]', rater.invoke)
 	$('body').on('click', 'a[href=#rater-force]', function(e){rater.invoke(e,1)});
 	
+	/*
+	nonstd = Non-standard
+	Extra/advanced options - deleting template, mark as "Unrated", etc.
+	*/
+	rater.nonstd={};
+	// Set up UI
+	rater.frame.change('nonstd')
+	rater.nonstd.view=rater.frame.list.nonstd
+	rater.frame.change('main')
+	
+	rater.nonstd.init=function(e){PD(e);
+		var v=rater.nonstd.view;
+		v.html('').append('<h2>Advanced options</h2>');
+		v.append(rater.nonstd.cancel_link);
+	};
+	rater.nonstd.cancel=function(e){PD(e);
+		rater.frame.change('main');
+	};
+	rater.nonstd.init_link=$('<a>').text('Advanced options').attr({href:'#rater-nonstd-init'});
+	rater.nonstd.cancel_link=$('<a>').text('Back').attr({href:'#rater-nonstd-cancel'}).css({color:'red', position:'absolute', right:0, top:'1em'});
+	$('body')
+		.on('click','a[href=#rater-nonstd-init]', rater.nonstd.init)
+		.on('click','a[href=#rater-nonstd-cancel]', rater.nonstd.cancel)
+	
 	
 	/*
 	Decriptions of URLs, tests, etc.
@@ -196,6 +220,7 @@ addOnloadHook(function(){jQuery(function($){
 		'whatlinkshere':wgScript+'/Special:WhatLinksHere/'+wgPageName,
 		'history':rater.page.url+'&action=history&limit=100'
 	};
+		
 	/*
 	Tests to be performed
 	Structure: {
