@@ -64,6 +64,8 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	
+	//Hide the old rating script
+	$('li#ca-rater').hide()
 	// Set up UI
 	rater.overlay = $('<div>').css({width:'100%', height:'100%', top:0, left:0,
 		position:'fixed', 'background-color':'rgba(128,128,128,0.5)', 'z-index':9999})
@@ -128,7 +130,7 @@ addOnloadHook(function(){jQuery(function($){
 	rater.frame.change=function(name){
 		if(rater.frame.current) $('.rater-frame').hide().css({margin:'1em'});
 		if(!(name in rater.frame.list)){
-			rater.frame.list[name]=$('<div>').addClass('rater-frame').css({margin:'1em'});
+			rater.frame.list[name]=$('<div>').addClass('rater-frame').css({margin:'1em',position:'relative'});
 		}
 		rater.frame.list[name].appendTo(rater.win.inner).show();
 		rater.frame.current=name;
@@ -472,7 +474,7 @@ addOnloadHook(function(){jQuery(function($){
 		
 		rater.box.append($("<p>").text("Score: "+rater.score))
 		//rater.select.init($("<div>").appendTo(rater.box));
-		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'3em',right:'1.5em'})
+		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'1em',right:'0'})
 	};
 	rater.select={};
 	rater.select.view=$("<div>").css({padding:'.2em'});
@@ -549,6 +551,7 @@ addOnloadHook(function(){jQuery(function($){
 		// Safety checks
 		var r=rater.select.current;
 		if(r in {}||!(r in rater.ratings)) return;
+		
 		var rating=rater.select.current.capitalize();
 		var old_rating=rater.tests.current_rating.capitalize();
 		if(!rater.loader.results.raw) return;
@@ -561,8 +564,8 @@ addOnloadHook(function(){jQuery(function($){
 		var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
-		
-		summary='Changed article rating from "{0}" to "{1}" (using the rating script)'.format(old_rating||'(None)',rating)
+		// Edit summary
+		var summary = (old_rating!='')?'Changed article rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added article rating "{0}" using the rating script'.format(rating)
 		
 		rater.progress.update(2,4);
 		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
@@ -586,8 +589,8 @@ addOnloadHook(function(){jQuery(function($){
 				
 				rater.progress.update(5,4);
 				rater.cancel();
+				jsMsg('Rated article <b>'+rating+'</b>');
 			});
-			
 		});
 	};
 	
@@ -602,15 +605,9 @@ addOnloadHook(function(){jQuery(function($){
 		var v=rater.qs_list[i].split('=');
 		rater.qs[v[0]]=v[1]
 	}
-	if(rater.qs.rated=='success'){
-		jsMsg('Rated article <b>'+rater.qs.rating+'</b>')
-	}
 	
 	//export
-	rater.loader = loader;
-	window.rater=rater
-	return rater;
-	
+	rater.loader=loader;	window.rater=rater;return rater;
 });});
 // </nowiki>
 
