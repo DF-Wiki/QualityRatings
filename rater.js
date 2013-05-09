@@ -64,6 +64,8 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	
+	//Hide the old rating script
+	$('li#ca-rater').hide()
 	// Set up UI
 	rater.overlay = $('<div>').css({width:'100%', height:'100%', top:0, left:0,
 		position:'fixed', 'background-color':'rgba(128,128,128,0.5)', 'z-index':9999})
@@ -549,6 +551,7 @@ addOnloadHook(function(){jQuery(function($){
 		// Safety checks
 		var r=rater.select.current;
 		if(r in {}||!(r in rater.ratings)) return;
+		
 		var rating=rater.select.current.capitalize();
 		var old_rating=rater.tests.current_rating.capitalize();
 		if(!rater.loader.results.raw) return;
@@ -561,8 +564,8 @@ addOnloadHook(function(){jQuery(function($){
 		var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
-		
-		summary='Changed article rating from "{0}" to "{1}" (using the rating script)'.format(old_rating||'(None)',rating)
+		// Edit summary
+		var summary = (old_rating!='')?'Changed article rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added article rating "{0}" using the rating script'.format(rating)
 		
 		rater.progress.update(2,4);
 		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
@@ -588,7 +591,6 @@ addOnloadHook(function(){jQuery(function($){
 				rater.cancel();
 				jsMsg('Rated article <b>'+rating+'</b>');
 			});
-			
 		});
 	};
 	
@@ -605,10 +607,7 @@ addOnloadHook(function(){jQuery(function($){
 	}
 	
 	//export
-	rater.loader = loader;
-	window.rater=rater
-	return rater;
-	
+	rater.loader=loader;	window.rater=rater;return rater;
 });});
 // </nowiki>
 
