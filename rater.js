@@ -297,7 +297,7 @@ addOnloadHook(function(){jQuery(function($){
 					'html':data.render.length,
 					'text':$(data.render).text().length
 				};
-				a.average=Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace * .3*a.text);
+				a.average=Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace + .3*a.text);
 				return a;
 			},
 			int:function(o){return o.average},
