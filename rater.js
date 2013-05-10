@@ -622,6 +622,7 @@ addOnloadHook(function(){jQuery(function($){
 		w('Ok\nEditing page... ');
 		// Edit summary
 		var summary = (old_rating!='')?'Changed article rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added article rating "{0}" using the rating script'.format(rating)
+		if(old_rating==rating) summary='Updated rating timestamp ("{0}") using the rating script'.format(rating)
 		
 		rater.progress.update(2,4);
 		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
