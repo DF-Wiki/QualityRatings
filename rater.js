@@ -243,11 +243,28 @@ addOnloadHook(function(){jQuery(function($){
 		linkshere:{
 			name:'Incoming links',
 			init:function(data){
-				return $(data.whatlinkshere).find('#mw-whatlinkshere-list').find('li').length;
+				var ul=$(data.whatlinkshere).find('#mw-whatlinkshere-list').find('li');
+				var a={length:ul.length, list:[]};
+				ul.each(function(i,e){
+					a.list.push($(e).find('a:nth(0)').text());
+					//console.log($(e).text());
+				});
+				return a;
+			},
+			str: function(o){return o.length},
+			int: function(o){return Number(o.length)},
+			info: function(o,view){
+				$('<h2>').text('Incoming links').appendTo(view);
+				var ul=$("<ul>").appendTo(view);
+				for(i in o.list){if(i in []) continue;
+					ul.append('<li><a href="{1}/{0}" target="_blank">{0}</a></li>'.format(o.list[i], wgScript));
+				}
+				view.append('<h4>Total: {0}</h4>'.format(o.length))
 			},
 			score:function(o){
-				if(o==0) return -35; //orphaned
-				return o*2.5; //links here are good
+				var x=o.length;
+				if(x==0) return -35; //orphaned
+				return x*2.5; //links here are good
 			}
 		},
 		editors:{
@@ -274,7 +291,7 @@ addOnloadHook(function(){jQuery(function($){
 				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
 				for(i in o){
 					if(i in {}||!i.indexOf('total')) continue;
-					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],wgScript))
+					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}" target="_blank">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],wgScript))
 				}
 				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'.format(o.total,o.total_edits))
 			},
