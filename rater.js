@@ -123,6 +123,8 @@ addOnloadHook(function(){jQuery(function($){
 		$('.topicon').append($("<span>"));
 	}
 	
+	rater.hide_link = $('<a>').text('Hide').attr('href','#rater-hide').css({color:'#f60', 
+		'float':'right', paddingRight:'0.5em'}).appendTo(rater.win);
 	rater.cancel_link = $('<a>').text('Cancel').attr('href','#rater-cancel').css({color:'red', 
 		'float':'right'}).appendTo(rater.win);
 	
@@ -202,7 +204,7 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.box.clear = function(){
 		rater.box.html('')
-		rater.box.append(rater.cancel_link)
+		rater.box.append(rater.cancel_link).append(rater.hide_link)
 			.append($('<h2>').text('Rating '+rater.page.name));
 		rater.event.trigger('box-clear');
 		return rater.box;
@@ -215,9 +217,22 @@ addOnloadHook(function(){jQuery(function($){
 		rater.win.stop(1,1).fadeOut(300);
 		if(rater.is_valid_page() || rater.rating_exists) rater.show_link_topicon.show(500);
 		rater.active=false;
-	}; 
+	};
+	rater.in_progress = false;
+	rater.hide = function(e){PD(e);
+		rater.win.fadeOut(300);
+		rater.resume_link = $('<a>').attr({href:'#rater-resume'}).text('Continue rating').appendTo('.topicon').css({padding:'0 0.5em'});
+		rater.in_progress = true;
+	};
+	rater.resume = function(e){PD(e);
+		if(!rater.in_progress) return;
+		rater.resume_link.hide();
+		rater.win.fadeIn(300);
+	};
 	$('body').on('click','a[href=#rater-cancel]',rater.cancel);
-	
+	$('body').on('click','a[href=#rater-hide]',rater.hide);
+	$('body').on('click','a[href=#rater-resume]',rater.resume);
+		
 	// Set up links
 	rater.show_link = $("<li>").append($('<span>').append(
 		$("<a href='#rater-invoke'>").text('Rate')
