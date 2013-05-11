@@ -7,7 +7,7 @@ Changes from old version: jQuery, extra automatic tests
 String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.replace(RegExp('\\{'+i+'\\}','g'), arguments[i])};return s};
 String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
 addOnloadHook(function(){jQuery(function($){
-	var rater = {};
+	var rater = {}, SCOPE=this;
 	
 	// Check for required definitions
 	if(!mw||!('wgScript' in window)) throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
@@ -64,6 +64,35 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	
+	rater.confirm = function(opts){
+		opts=$.extend({
+			title:'undefined',
+			text:'undefined',
+			ok: function(){},
+			cancel: function(){},
+			ok_text:'Ok',
+			cancel_text:'Cancel'
+		},opts);
+		var d = rater.Dialog();
+		d.show();
+		d.view.html('<p style="font-weight:bold">{0}</p><p>{1}</p>'.format(opts.title, opts.text));
+		d.bottom.append($('<div id="buttons">').css({textAlign:'right'}));
+		d.buttons = d.bottom.find('#buttons')
+		var cancel_link = $('<a>').text(opts.cancel_text).data('ok',0).appendTo(d.buttons);
+		var ok_link = $('<a>').text(opts.ok_text).data('ok',1).appendTo(d.buttons.append(' '));
+		d.select=function(e){PD(e);
+			d.hide();
+			if($(this).data('ok')) opts.ok();
+			else opts.cancel();
+		}
+		ok_link.add(cancel_link).attr({href:'#'}).on('click',d.select);
+		return d;
+	};
+	
+	rater.confirm.close = function(){
+		rater.popup.hide()
+	};
+	
 	//Hide the old rating script
 	$('li#ca-rater').hide()
 	// Set up UI
@@ -108,16 +137,48 @@ addOnloadHook(function(){jQuery(function($){
 	rater.popup.close_link = $('<a>').text('Close').attr('href','#rater-popup-hide').css({color:'red', 
 		'float':'right'}).appendTo(rater.popup.box);
 
-	rater.popup_show=function(e){//note _ - avoid $ clash
+	rater.popup.show = rater.popup_show = function(e){
 		PD(e);
 		rater.popup.box.stop(1,1).fadeIn(300);
 		rater.popup.overlay.stop(1,1).fadeIn(300);
 	};
-	rater.popup_hide = function(e){
+	rater.popup.hide = rater.popup_hide = function(e){
 		PD(e);
 		rater.popup.overlay.stop(1,1).fadeOut(300);
 		rater.popup.box.stop(1,1).fadeOut(300);
 	}; 
+	
+	rater.Dialog = function(opts){
+		var t={}; //'this'
+		t.opts = $.extend({show_close_link:0}, opts);
+		t.overlay = $('<div>').css({width:'100%', height:'100%', top:0, left:0,
+			position:'fixed', 'background-color':'rgba(128,128,128,0.5)', 'z-index':11001})
+			.hide().appendTo('body');
+		t.box = $('<div>').css({width:'40%', height:'20%', top:'30%', left:'30%',
+			position:'fixed', 'background-color':'white', 'z-index':11002, padding:'1em',
+			overflow:'auto','border-radius':4})
+			.hide().appendTo('body');
+		t.view = $('<div>').appendTo(t.box)
+		t.bottom = $('<div>').css({position:'absolute', bottom:'1em', right:'1em'}).appendTo(t.box)
+		t.close_link = $('<a>').text('Close').attr('href','#rater-popup-hide').css({color:'red', 
+			'float':'right'}).appendTo(t.box);
+		if(!t.opts.show_close_link) t.close_link.hide();
+		t.show = function(e){
+			PD(e);
+			t.box.stop(1,1).fadeIn(300);
+			t.overlay.stop(1,1).fadeIn(300);
+			return t;
+		};
+		t.hide = function(e){
+			PD(e);
+			t.overlay.stop(1,1).fadeOut(300);
+			t.box.stop(1,1).fadeOut(300);
+			return t;
+		}; 
+		if(t!=window&&t!=SCOPE) for(i in t) this[i]=t[i];
+		return t;
+	};
+	
 	$('body').on('click','a[href=#rater-popup-hide]',rater.popup_hide);
 	
 	rater.popup.clear=function(){
