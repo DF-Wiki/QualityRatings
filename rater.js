@@ -175,7 +175,7 @@ addOnloadHook(function(){jQuery(function($){
 			t.box.stop(1,1).fadeOut(300);
 			return t;
 		}; 
-		if(t!=window&&t!=SCOPE) for(i in t) this[i]=t[i];
+		//if(t!=window&&t!=SCOPE) for(i in t) this[i]=t[i];
 		return t;
 	};
 	
@@ -458,6 +458,11 @@ addOnloadHook(function(){jQuery(function($){
 		loader.event.bind('done',func);
 	};
 	
+	loader.reset = function(){
+		// Avoid caching - it messes with the old rating vs new rating code
+		loader.key+=Math.floor(Math.random()*1e2)+2;
+	};
+	
 	rater.help={view:$('<div>').css({height:'100%'})};
 	rater.help.init=function(){
 		$.get(wgScript+'/DF:Quality',function(d){
@@ -489,15 +494,16 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.progress.fill=$('<div>').css({float:'left',padding:0,margin:0,'background-color':'#ce9','border-right':'1px solid #ac7',height:'100%',width:0,margin:-3, position:'relative',top:0,left:0, 'border-radius':2}).appendTo(rater.progress.bar).html('&nbsp;');
 		
-	rater.progress.update=function(done,total){
+	rater.progress.update=function(done,total,dur){
 		var perc=done/Math.max(total,1)*100;
-		rater.progress.fill.stop().animate({width:perc+'%'},150)
+		dur=Number(dur||0);
+		if(!dur) dur=150;
+		rater.progress.fill.stop().animate({width:perc+'%'},dur)
 	};
-	rater.progress.reset=function(){rater.progress.update(0,1);};
+	rater.progress.reset=function(){rater.progress.update(0,1,-1);};
 	
 	rater.begin_tests = function(){
-		render_url=rater.page.url+'&action=render'
-		raw_url=rater.page.url+'&action=raw'
+		// Initialize the 'help' view
 		rater.help.init();
 		for(i in rater.metadata.urls){if(i in {})continue;
 			loader.add(i, rater.metadata.urls[i]);
@@ -529,6 +535,7 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	
 	rater.display_test_results=function(){
+		rater.frame.change('main')
 		var md=rater.metadata.tests;
 		rater.box.clear();
 		data=rater.tests;
@@ -618,7 +625,6 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.submit_rating=function(){
 		// Set up UI
-		rater.overlay.fadeIn(400);
 		rater.frame.change('submit-progress');
 		var view=rater.frame.current_frame();
 		view.html('');
@@ -647,35 +653,50 @@ addOnloadHook(function(){jQuery(function($){
 		if(rating==old_rating) summary='Updated rating timestamp ("{0}") using the rating script'.format(rating)
 		
 		rater.progress.update(2,4);
-		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
-		token:token,minor:1,summary:summary},function(d){
-			rater.progress.update(3,4);
-			w('Finished!\nUpdating...');
-			// Parse {{quality}} with the new rating
-			$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
-			function(d){
-				rater.progress.update(4,4);
-				$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
-				// Replace categories
-				$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
-				var cats = d.parse.categories;
-				for(i=0;i<cats.length;i++){
-					$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
-				}
+		var save=function(){
+			rater.overlay.fadeIn(400);
+			$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
+			token:token,minor:1,summary:summary},function(d){
+				rater.progress.update(3,4);
+				w('Finished!\nUpdating...');
+				// Parse {{quality}} with the new rating
+				$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
+				function(d){
+					rater.progress.update(4,4);
+					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
+					// Replace categories
+					$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
+					var cats = d.parse.categories;
+					for(i=0;i<cats.length;i++){
+						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
+					}
 				
-				$('.catlinks li a:hidden').remove();
-				$('.catlinks li:empty').remove();
+					$('.catlinks li a:hidden').remove();
+					$('.catlinks li:empty').remove();
 				
-				rater.progress.update(5,4);
-				rater.cancel();
-				jsMsg('Rated article <b>'+rating+'</b>');
-				var old_title=document.title;
-				document.title='Rated article '+rating
-				setTimeout(function(){
-					document.title=old_title
-				}, 2500);
+					rater.progress.update(5,4);
+					rater.cancel();
+					jsMsg('Rated article <b>'+rating+'</b>');
+					var old_title=document.title;
+					document.title='Rated article '+rating
+					setTimeout(function(){
+						document.title=old_title
+					}, 2500);
+					loader.reset()
+				});
 			});
-		});
+		};
+		// Confirm if ratings are identical
+		if(rating == old_rating){
+			rater.confirm({
+				title:'Confirm submission', 
+				text:'The rating you selected is the same as the current rating. Continuing will only update the timestamp. Do you want to continue?',
+				ok_text:'Only update timestamp',
+				ok:save,
+				cancel:rater.display_test_results
+			});
+		}
+		else save()
 	};
 	
 	//check for a provided hash...
