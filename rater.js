@@ -218,6 +218,8 @@ addOnloadHook(function(){jQuery(function($){
 		if(rater.is_valid_page() || rater.rating_exists) rater.show_link_topicon.show(500);
 		rater.active=false;
 	};
+	// True when in the middle of a rating
+	// Note the difference between this and rater.active, true when the rater is opened (maybe visible)
 	rater.in_progress = false;
 	rater.hide = function(e){PD(e);
 		rater.win.fadeOut(300);
@@ -243,6 +245,7 @@ addOnloadHook(function(){jQuery(function($){
 	rater.show_link_topicon = $('<a>').attr({href:'#rater-invoke',title:"Change this page's rating"}).text('Change').appendTo('.topicon').css({'padding-left':6});
 	if(!rater.rating_exists) rater.show_link_topicon.hide()
 	
+	// True when the rater box has been opened but not closed (may be hidden)
 	rater.active=false;
 	rater.invoke = function(e, force){
 		PD(e);
