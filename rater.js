@@ -213,7 +213,7 @@ addOnloadHook(function(){jQuery(function($){
 		PD(e);rater.show_link.removeClass('selected');
 		rater.overlay.stop(1,1).fadeOut(300);
 		rater.win.stop(1,1).fadeOut(300);
-		rater.show_link_topicon.show(500);
+		if(rater.is_valid_page() || rater.rating_exists) rater.show_link_topicon.show(500);
 		rater.active=false;
 	}; 
 	$('body').on('click','a[href=#rater-cancel]',rater.cancel);
