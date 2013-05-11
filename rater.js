@@ -505,6 +505,7 @@ addOnloadHook(function(){jQuery(function($){
 	rater.begin_tests = function(){
 		// Initialize the 'help' view
 		rater.help.init();
+		rater.progress.reset();
 		for(i in rater.metadata.urls){if(i in {})continue;
 			loader.add(i, rater.metadata.urls[i]);
 		}
