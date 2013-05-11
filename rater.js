@@ -7,7 +7,7 @@ Changes from old version: jQuery, extra automatic tests
 String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.replace(RegExp('\\{'+i+'\\}','g'), arguments[i])};return s};
 String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
 addOnloadHook(function(){jQuery(function($){
-	var rater = {};
+	var rater = {}, SCOPE=this;
 	
 	// Check for required definitions
 	if(!mw||!('wgScript' in window)) throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
@@ -64,6 +64,35 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	
+	rater.confirm = function(opts){
+		opts=$.extend({
+			title:'undefined',
+			text:'undefined',
+			ok: function(){},
+			cancel: function(){},
+			ok_text:'Ok',
+			cancel_text:'Cancel'
+		},opts);
+		var d = rater.Dialog();
+		d.show();
+		d.view.html('<p style="font-weight:bold">{0}</p><p>{1}</p>'.format(opts.title, opts.text));
+		d.bottom.append($('<div id="buttons">').css({textAlign:'right'}));
+		d.buttons = d.bottom.find('#buttons')
+		var cancel_link = $('<a>').text(opts.cancel_text).data('ok',0).appendTo(d.buttons);
+		var ok_link = $('<a>').text(opts.ok_text).data('ok',1).appendTo(d.buttons.append(' '));
+		d.select=function(e){PD(e);
+			d.hide();
+			if($(this).data('ok')) opts.ok();
+			else opts.cancel();
+		}
+		ok_link.add(cancel_link).attr({href:'#'}).on('click',d.select);
+		return d;
+	};
+	
+	rater.confirm.close = function(){
+		rater.popup.hide()
+	};
+	
 	//Hide the old rating script
 	$('li#ca-rater').hide()
 	// Set up UI
@@ -108,16 +137,48 @@ addOnloadHook(function(){jQuery(function($){
 	rater.popup.close_link = $('<a>').text('Close').attr('href','#rater-popup-hide').css({color:'red', 
 		'float':'right'}).appendTo(rater.popup.box);
 
-	rater.popup_show=function(e){//note _ - avoid $ clash
+	rater.popup.show = rater.popup_show = function(e){
 		PD(e);
 		rater.popup.box.stop(1,1).fadeIn(300);
 		rater.popup.overlay.stop(1,1).fadeIn(300);
 	};
-	rater.popup_hide = function(e){
+	rater.popup.hide = rater.popup_hide = function(e){
 		PD(e);
 		rater.popup.overlay.stop(1,1).fadeOut(300);
 		rater.popup.box.stop(1,1).fadeOut(300);
 	}; 
+	
+	rater.Dialog = function(opts){
+		var t={}; //'this'
+		t.opts = $.extend({show_close_link:0}, opts);
+		t.overlay = $('<div>').css({width:'100%', height:'100%', top:0, left:0,
+			position:'fixed', 'background-color':'rgba(128,128,128,0.5)', 'z-index':11001})
+			.hide().appendTo('body');
+		t.box = $('<div>').css({width:'40%', height:'20%', top:'30%', left:'30%',
+			position:'fixed', 'background-color':'white', 'z-index':11002, padding:'1em',
+			overflow:'auto','border-radius':4})
+			.hide().appendTo('body');
+		t.view = $('<div>').appendTo(t.box)
+		t.bottom = $('<div>').css({position:'absolute', bottom:'1em', right:'1em'}).appendTo(t.box)
+		t.close_link = $('<a>').text('Close').attr('href','#rater-popup-hide').css({color:'red', 
+			'float':'right'}).appendTo(t.box);
+		if(!t.opts.show_close_link) t.close_link.hide();
+		t.show = function(e){
+			PD(e);
+			t.box.stop(1,1).fadeIn(300);
+			t.overlay.stop(1,1).fadeIn(300);
+			return t;
+		};
+		t.hide = function(e){
+			PD(e);
+			t.overlay.stop(1,1).fadeOut(300);
+			t.box.stop(1,1).fadeOut(300);
+			return t;
+		}; 
+		//if(t!=window&&t!=SCOPE) for(i in t) this[i]=t[i];
+		return t;
+	};
+	
 	$('body').on('click','a[href=#rater-popup-hide]',rater.popup_hide);
 	
 	rater.popup.clear=function(){
@@ -397,6 +458,11 @@ addOnloadHook(function(){jQuery(function($){
 		loader.event.bind('done',func);
 	};
 	
+	loader.reset = function(){
+		// Avoid caching - it messes with the old rating vs new rating code
+		loader.key+=Math.floor(Math.random()*1e2)+2;
+	};
+	
 	rater.help={view:$('<div>').css({height:'100%'})};
 	rater.help.init=function(){
 		$.get(wgScript+'/DF:Quality',function(d){
@@ -428,16 +494,18 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.progress.fill=$('<div>').css({float:'left',padding:0,margin:0,'background-color':'#ce9','border-right':'1px solid #ac7',height:'100%',width:0,margin:-3, position:'relative',top:0,left:0, 'border-radius':2}).appendTo(rater.progress.bar).html('&nbsp;');
 		
-	rater.progress.update=function(done,total){
+	rater.progress.update=function(done,total,dur){
 		var perc=done/Math.max(total,1)*100;
-		rater.progress.fill.stop().animate({width:perc+'%'},150)
+		dur=Number(dur||0);
+		if(!dur) dur=150;
+		rater.progress.fill.stop().animate({width:perc+'%'},dur)
 	};
-	rater.progress.reset=function(){rater.progress.update(0,1);};
+	rater.progress.reset=function(){rater.progress.update(0,1,-1);};
 	
 	rater.begin_tests = function(){
-		render_url=rater.page.url+'&action=render'
-		raw_url=rater.page.url+'&action=raw'
+		// Initialize the 'help' view
 		rater.help.init();
+		rater.progress.reset();
 		for(i in rater.metadata.urls){if(i in {})continue;
 			loader.add(i, rater.metadata.urls[i]);
 		}
@@ -468,6 +536,7 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	
 	rater.display_test_results=function(){
+		rater.frame.change('main')
 		var md=rater.metadata.tests;
 		rater.box.clear();
 		data=rater.tests;
@@ -557,7 +626,6 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.submit_rating=function(){
 		// Set up UI
-		rater.overlay.fadeIn(400);
 		rater.frame.change('submit-progress');
 		var view=rater.frame.current_frame();
 		view.html('');
@@ -586,35 +654,50 @@ addOnloadHook(function(){jQuery(function($){
 		if(rating==old_rating) summary='Updated rating timestamp ("{0}") using the rating script'.format(rating)
 		
 		rater.progress.update(2,4);
-		$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
-		token:token,minor:1,summary:summary},function(d){
-			rater.progress.update(3,4);
-			w('Finished!\nUpdating...');
-			// Parse {{quality}} with the new rating
-			$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
-			function(d){
-				rater.progress.update(4,4);
-				$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
-				// Replace categories
-				$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
-				var cats = d.parse.categories;
-				for(i=0;i<cats.length;i++){
-					$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
-				}
+		var save=function(){
+			rater.overlay.fadeIn(400);
+			$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
+			token:token,minor:1,summary:summary},function(d){
+				rater.progress.update(3,4);
+				w('Finished!\nUpdating...');
+				// Parse {{quality}} with the new rating
+				$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
+				function(d){
+					rater.progress.update(4,4);
+					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
+					// Replace categories
+					$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
+					var cats = d.parse.categories;
+					for(i=0;i<cats.length;i++){
+						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
+					}
 				
-				$('.catlinks li a:hidden').remove();
-				$('.catlinks li:empty').remove();
+					$('.catlinks li a:hidden').remove();
+					$('.catlinks li:empty').remove();
 				
-				rater.progress.update(5,4);
-				rater.cancel();
-				jsMsg('Rated article <b>'+rating+'</b>');
-				var old_title=document.title;
-				document.title='Rated article '+rating
-				setTimeout(function(){
-					document.title=old_title
-				}, 2500);
+					rater.progress.update(5,4);
+					rater.cancel();
+					jsMsg('Rated article <b>'+rating+'</b>');
+					var old_title=document.title;
+					document.title='Rated article '+rating
+					setTimeout(function(){
+						document.title=old_title
+					}, 2500);
+					loader.reset()
+				});
 			});
-		});
+		};
+		// Confirm if ratings are identical
+		if(rating == old_rating){
+			rater.confirm({
+				title:'Confirm submission', 
+				text:'The rating you selected is the same as the current rating. Continuing will only update the timestamp. Do you want to continue?',
+				ok_text:'Only update timestamp',
+				ok:save,
+				cancel:rater.display_test_results
+			});
+		}
+		else save()
 	};
 	
 	//check for a provided hash...
