@@ -619,8 +619,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.cancel_link=$('<a>').attr({href:'#rater-select-cancel'}).text("Back").appendTo(topview).css({color:'red'});
 		rater.select.cancel_link.clone().appendTo(view)
 		rater.help.view.appendTo(view);
-		rater.help.update(selected.id);
-		//rater.box.scrollTop(rater.box.height());
+		rater.help.update(selected&&selected.id||0);
 	};
 	
 	rater.select.click=function(e){if(e.type=='click')PD(e);
