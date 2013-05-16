@@ -414,6 +414,27 @@ addOnloadHook(function(){jQuery(function($){
 			},
 			score:function(o){if(o<1) return 0; if(o==1) return -10; return o*-20}
 		},
+		categories:{
+			name:'Categories',
+			init:function(data){
+				var o={}, cats=$('body').find('.catlinks li');
+				o.total=cats.length;
+				o.list=[];
+				cats.each(function(i,e){
+					o.list.push($(e).text());
+				});
+				return o;
+			},
+			int: function(o){return o.total},
+			info: function(o, view){
+				$('<h2>').text('Categories').appendTo(view);
+				var ul=$("<ul>").appendTo(view);
+				for(i in o.list){if(i in []) continue;
+					ul.append('<li><a href="{1}/Category:{0}" target="_blank">{0}</a></li>'.format(o.list[i], wgScript));
+				}
+				view.append('<h4>Total: {0}</h4>'.format(o.total))
+			}
+		},
 		current_rating:{
 			name:'Current rating',
 			init:function(data){
@@ -562,7 +583,8 @@ addOnloadHook(function(){jQuery(function($){
 		rater.score=0;
 		for(var i in data){
 			name=md[i].name;
-			str=is_func(md[i].str)?md[i].str(data[i]):data[i];
+			str=is_func(md[i].str)?md[i].str(data[i]):
+				(is_func(md[i].int)?md[i].int(data[i]):data[i]);
 			if(is_func(md[i].info)){
 				str=$('<a href="#">'+str+'</a>').data({f:md[i].info,d:data[i]})
 				.click(function(e){d=$(this).data()
