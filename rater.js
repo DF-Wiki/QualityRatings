@@ -404,6 +404,7 @@ addOnloadHook(function(){jQuery(function($){
 				for(i in o){if(!(i in descs))continue;
 					tbl.append('<tr><td>{0}</td><td>{1}</td></tr>'.format(descs[i],o[i]));
 				}
+				tbl.append('<tr style="font-weight:bold;"><td>Weighted</td><td>{0}</td></tr>'.format(o.average))
 			}
 		},
 		verify:{
@@ -562,15 +563,14 @@ addOnloadHook(function(){jQuery(function($){
 		for(var i in data){
 			name=md[i].name;
 			str=is_func(md[i].str)?md[i].str(data[i]):data[i];
-			append='';
 			if(is_func(md[i].info)){
-				append=$('<a href="#">[Info]</a>').data({f:md[i].info,d:data[i]})
+				str=$('<a href="#">'+str+'</a>').data({f:md[i].info,d:data[i]})
 				.click(function(e){d=$(this).data()
 					rater.popup.clear();	rater.popup_show(e);
 					d.f(d.d,rater.popup.box.append($("<div>")))
-				}).css('padding-left','1em');
+				}).css({color:'#1655ad'});
 			}
-			rater.box.append($("<p>"+name+": "+str+"</p>").append(append));
+			rater.box.append($("<p>"+name+": </p>").append(str));
 			if(is_func(md[i].score)){
 				rater.score += Number(md[i].score(data[i]))
 			}
