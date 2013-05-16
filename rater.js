@@ -272,7 +272,7 @@ addOnloadHook(function(){jQuery(function($){
 	rater.metadata.urls = {
 		'raw':rater.page.url+'&action=raw',
 		'render':rater.page.url+'&action=render',
-		'whatlinkshere':wgScript+'/Special:WhatLinksHere/'+wgPageName,
+		'whatlinkshere':wgScript+'?title=Special:WhatLinksHere/'+wgPageName+'&hideredirs=1&hidetrans=1',
 		'history':rater.page.url+'&action=history&limit=100'
 	};
 	/*
