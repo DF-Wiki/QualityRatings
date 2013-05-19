@@ -275,13 +275,15 @@ addOnloadHook(function(){jQuery(function($){
 			desc: 'Remove the quality rating',
 			process: function(data){
 				return data.replace(/{{quality[^}]*?}}\n*/gi,'');
-			}
+			},
+			summary:'Removed quality rating (was "{0}")'
 		},
 		'mark-unrated':{
 			desc: 'Mark as unrated',
 			process: function(data){
 				return data.replace(/{{quality[^}]*?}}\n*/gi,'{{quality|Unrated|~~~~~}}\n');
-			}
+			},
+			summary:'Changed quality rating from "{0}" to "Unrated"'
 		}
 	};
 	
@@ -302,9 +304,14 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	rater.nonstd.select=function(e){PD(e);
-		var opt=$(this).data('opt'),md=rater.nonstd.metadata;
+		var opt=rater.nonstd.opt=$(this).data('opt');
+		rater.confirm({title:'Confirm', text:'Are you sure you want to perform this action?',
+			ok_text:'Continue', ok:rater.nonstd.process})
+	};
+	rater.nonstd.process = function(){
+		var opt=rater.nonstd.opt,md=rater.nonstd.metadata;
 		var new_text = md[opt].process(rater.loader.results.raw);
-		console.log(new_text);
+		console.log(new_text, ':',opt);
 	};
 	
 	rater.nonstd.cancel=function(e){PD(e);
