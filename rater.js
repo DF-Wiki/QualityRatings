@@ -746,8 +746,8 @@ addOnloadHook(function(){jQuery(function($){
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
-		var summary = (old_rating!='')?'Changed article rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added article rating "{0}" using the rating script'.format(rating)
-		if(rating==old_rating) summary='Updated rating timestamp ("{0}") using the rating script'.format(rating)
+		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added quality rating "{0}" using the rating script'.format(rating)
+		if(rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
 		
 		rater.progress.update(2,4);
 		var save=function(){
@@ -784,13 +784,19 @@ addOnloadHook(function(){jQuery(function($){
 			});
 		};
 		// Confirm if ratings are identical
+		function cancel(){
+			rater.popup.hide()
+			// Go back to the rating description
+			rater.frame.change('rating-desc')
+			rater.overlay.fadeOut(400);
+		};
 		if(rating == old_rating){
 			rater.confirm({
 				title:'Confirm submission', 
 				text:'The rating you selected is the same as the current rating. Continuing will only update the timestamp. Do you want to continue?',
 				ok_text:'Only update timestamp',
 				ok:save,
-				cancel:rater.display_test_results
+				cancel:cancel
 			});
 		}
 		else save()
