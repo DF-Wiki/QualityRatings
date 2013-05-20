@@ -759,8 +759,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.progress.update(2,4);
 		var save=function(){
 			rater.overlay.fadeIn(400);
-			$.post(wgScriptPath+'/api.php', {action:'edit',title:rater.page.name,text:text,
-			token:token,minor:1,summary:summary},function(d){
+			rater.update_page=function(){
 				rater.progress.update(3,4);
 				w('Finished!\nUpdating...');
 				// Parse {{quality}} with the new rating
@@ -788,7 +787,8 @@ addOnloadHook(function(){jQuery(function($){
 					}, 2500);
 					loader.reset()
 				});
-			});
+			};
+			rater.edit_page({minor:1, text:text, summary:summary}).on('done',rater.update_page);
 		};
 		// Confirm if ratings are identical
 		function cancel(){
@@ -807,6 +807,22 @@ addOnloadHook(function(){jQuery(function($){
 			});
 		}
 		else save()
+	};
+	
+	rater.edit_page=function(opts){
+		if(!('text' in opts)) return false;
+		opts=$.extend({
+			summary:'',
+			token:mw.user.tokens.values.editToken,
+			title:rater.page.name,
+			minor:0
+		},opts);
+		var event=$({}); // For attaching callbacks
+		$.post(wgScriptPath+'/api.php', {action:'edit', title:opts.title, text:opts.text,
+		token:opts.token, minor:opts.minor, summary:opts.summary},function(d){
+			event.trigger('done')
+		});
+		return event;
 	};
 	
 	//check for a provided hash...
