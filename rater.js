@@ -281,7 +281,7 @@ addOnloadHook(function(){jQuery(function($){
 		'mark-unrated':{
 			desc: 'Mark as unrated',
 			process: function(data){
-				return data.replace(/{{quality[^}]*?}}\n*/gi,'{{quality|Unrated|~~~~~}}\n');
+				return data.replace(/{{quality[^}]*?}}\n*/gi,'')+'{{quality|Unrated|~~~~~}}\n';
 			},
 			summary:'Changed quality rating from "{0}" to "Unrated"'
 		}
@@ -311,7 +311,10 @@ addOnloadHook(function(){jQuery(function($){
 	rater.nonstd.process = function(){
 		var opt=rater.nonstd.opt,md=rater.nonstd.metadata;
 		var new_text = md[opt].process(rater.loader.results.raw);
-		console.log(new_text, ':',opt);
+		rater.confirm({title:'Saving...', text:'Please wait', ok_text:'', cancel_text:''})
+		rater.edit_page({text:new_text, minor:1, summary:md[opt].summary.format(rater.tests.current_rating) + ' using the rating script'}).on('done', function(){
+			window.location.reload();
+		});
 	};
 	
 	rater.nonstd.cancel=function(e){PD(e);
