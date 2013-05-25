@@ -283,7 +283,8 @@ addOnloadHook(function(){jQuery(function($){
 			process: function(data){
 				return data.replace(/{{quality[^}]*?}}\n*/gi,'')+'{{quality|Unrated|~~~~~}}\n';
 			},
-			summary:'Changed quality rating from "{0}" to "Unrated"'
+			summary:'Changed quality rating from "{0}" to "Unrated"',
+			needs_valid: true
 		}
 	};
 	
@@ -295,10 +296,12 @@ addOnloadHook(function(){jQuery(function($){
 	rater.nonstd.init=function(e){PD(e);
 		rater.frame.change('nonstd');
 		var v=rater.nonstd.view;
-		v.html('').append('<h2>Advanced options</h2>');
+		v.html('').append('<h2>Advanced options</h2><p id="p">No options available for this page.</p>');
 		v.append(rater.nonstd.cancel_link);
 		var md=rater.nonstd.metadata, ul=$('<ul>').appendTo(v);
 		for(var i in md){if(i in {}) continue;
+			if(!rater.is_valid_page() && md[i].needs_valid) continue;
+			v.find('p#p').hide()
 			var a=$('<a>').text(md[i].desc).attr('href','#rater-nonstd-select').data('opt',i)
 			ul.append($("<li>").append(a));
 		}
