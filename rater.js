@@ -843,7 +843,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.qs[v[0]]=v[1]
 	}
 	
-	$(document).trigger('rater-ready');
+	//$(document).trigger('rater-ready');
 	//export
 	rater.loader=loader;window.rater=rater;return rater;
 });});
