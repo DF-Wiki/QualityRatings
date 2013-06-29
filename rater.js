@@ -104,7 +104,7 @@ addOnloadHook(function(){jQuery(function($){
 	//See http://jsfiddle.net/AN9qR/4/
 	var win_height=$(window).height()/2;
 	var win_width = $('#bodyContent').width()*0.8;
-	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'1.5em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, overflow:'auto', 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
+	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'1.5em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
 		.hide().appendTo('#bodyContent');
 	
 	rater.win.filler = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:0, left:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10002, overflow:'hidden', 'border-radius':4})
@@ -253,8 +253,10 @@ addOnloadHook(function(){jQuery(function($){
 		rater.win.stop(1,1).fadeIn(300);
 		rater.frame.change('main');
 		rater.box.clear();
-		if(!rater.is_valid_page(wgPageName) && !force)
-			return rater.error_invalid_page();
+		if(!rater.is_valid_page(wgPageName) && !force){
+			rater.error_invalid_page();
+			return;
+		}
 		rater.show_link_topicon.hide(500);
 		rater.show_link.addClass('selected');
 		rater.box.append('<p>Performing automatic tests, please wait...</p>');
@@ -599,7 +601,7 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.progress.bar=$('<div>').css({width:'100%','background-color':'#fff',border:'1px solid #ac7',padding:3,'border-radius':2,overflow:'hidden'}).appendTo(rater.progress.view);
 	
-	rater.progress.fill=$('<div>').css({float:'left',padding:0,margin:0,'background-color':'#ce9','border-right':'1px solid #ac7',height:'100%',width:0,margin:-3, position:'relative',top:0,left:0, 'border-radius':2}).appendTo(rater.progress.bar).html('&nbsp;');
+	rater.progress.fill=$('<div>').css({float:'left',padding:0,'background-color':'#ce9','border-right':'1px solid #ac7',height:'100%',width:0,margin:-3, position:'relative',top:0,left:0, 'border-radius':2}).appendTo(rater.progress.bar).html('&nbsp;');
 		
 	rater.progress.update=function(done,total,dur){
 		var perc=done/Math.max(total,1)*100;
