@@ -370,13 +370,13 @@ addOnloadHook(function(){jQuery(function($){
 			
 		},
 		'render': function(obj){
-			
+			return obj.parse;
 		},
 		'backlinks': function(obj){
-			
+			return obj.backlinks;
 		},
 		'history': function(obj){
-			
+			return obj.pages[1].revisions;
 		},
 	}
 		
@@ -585,7 +585,11 @@ addOnloadHook(function(){jQuery(function($){
 		loader.total_tests++;
 	};
 	loader.ready = function(name,data){
-		if(data.query) data = data.query;
+		if(data.query)
+			data = data.query;
+		// Pass data through relevant filter, if it exists
+		if (rater.metadata.data_filters[name])
+			data = rater.metadata.data_filters[name](data);
 		loader.list[name].result = loader.results[name] = data;
 		loader.num_waiting--;
 		loader.event.trigger('ready',{left:loader.num_waiting,total:loader.total_tests,name:name,data:data}); 
