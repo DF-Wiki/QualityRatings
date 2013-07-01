@@ -346,12 +346,12 @@ addOnloadHook(function(){jQuery(function($){
 			titles: rater.page.name,
 			rvprop: 'content',
 			rvlimit: 1,
+			indexpageids: 1,
 		},
 		'render': {
 			action: 'parse',
 			page: rater.page.name,
 			prop: 'text|categories|links|templates|externallinks',
-			
 		},
 		'backlinks': {
 			action: 'query',
@@ -366,6 +366,7 @@ addOnloadHook(function(){jQuery(function($){
 			titles: rater.page.name,
 			rvprop: 'user',
 			rvlimit: 100,
+			indexpageids: 1,
 		},
 	};
 	
@@ -373,7 +374,7 @@ addOnloadHook(function(){jQuery(function($){
 	// Essentially prevents having to write obj.query.pages[1] too often
 	rater.metadata.data_filters = {
 		'raw': function(obj){
-			return obj.pages[1].revisions[0]['*'];
+			return obj.pages[obj.pageids[0]].revisions[0]['*'];
 		},
 		'render': function(obj){
 			return obj.parse;
@@ -382,7 +383,7 @@ addOnloadHook(function(){jQuery(function($){
 			return obj.backlinks;
 		},
 		'history': function(obj){
-			return obj.pages[1].revisions;
+			return obj.pages[obj.pageids[0]].revisions;
 		},
 	}
 		
@@ -408,9 +409,9 @@ addOnloadHook(function(){jQuery(function($){
 		redlinks:{
 			name:'Redlinks',
 			init:function(data){
-				all_links = data.render.match(/<a .*<\/a>/g);
+				all_links = data.render.text['*'].match(/<a .*<\/a>/g);
 				if(!all_links) return 0; //no links
-				total_redlinks=0;
+				var total_redlinks=0;
 				$.each(all_links, function(i,link){
 					if(link.match(/href=.*redlink=1/)) total_redlinks++;
 				});
