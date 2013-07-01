@@ -845,7 +845,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.qs[v[0]]=v[1]
 	}
 	
-	$('body').trigger('rater.ready');
+	$('body').trigger('rater-ready');
 	//export
 	rater.loader=loader;window.rater=rater;return rater;
 });});
