@@ -338,11 +338,47 @@ addOnloadHook(function(){jQuery(function($){
 	*/
 	rater.metadata={};
 	rater.metadata.urls = {
-		'raw':rater.page.url+'&action=raw',
-		'render':rater.page.url+'&action=render',
-		'whatlinkshere':wgScript+'?title=Special:WhatLinksHere/'+wgPageName+'&hideredirs=1&hidetrans=1',
-		'history':rater.page.url+'&action=history&limit=100'
+		// API queries (not actual URLs)
+		// Objects are converted to a querystring by jQuery
+		'raw': {
+			
+		},
+		'render': {
+			action: 'parse',
+			page: rater.page.name,
+			prop: 'text|categories|links|templates|externallinks',
+			
+		},
+		'backlinks': {
+			action: 'query',
+			list: 'backlinks',
+			bltitle: rater.page.name, 
+			bllimit: 50,
+			blfilterredir: 'nonredirects',
+		},
+		'history': {
+			action: 'query',
+			prop: 'revisions',
+			titles: rater.page.name,
+			rvprop: 'user',
+			rvlimit: 100,
+		},
 	};
+	
+	rater.metadata.data_filters = {
+		'raw': function(obj){
+			
+		},
+		'render': function(obj){
+			
+		},
+		'backlinks': function(obj){
+			
+		},
+		'history': function(obj){
+			
+		},
+	}
 		
 	/*
 	Tests to be performed
@@ -539,17 +575,19 @@ addOnloadHook(function(){jQuery(function($){
 	loader.total_tests = 0;
 	loader.key=Math.floor(Math.random()*1e8); //prevent caching
 	
-	loader.add = function(name,url){ 
-		loader.list[name] = {url:url};
-		$.get(url, {rater:loader.key}, function(data){
+	loader.add = function(name, url, urldata){ 
+		loader.list[name] = {url:url, urldata:urldata};
+		urldata = $.extend(urldata, {rater:loader.key});
+		$.get(url, urldata, function(data){
 			loader.ready(name, data);
 		});
-		loader.num_waiting++
-		loader.total_tests++
+		loader.num_waiting++;
+		loader.total_tests++;
 	};
 	loader.ready = function(name,data){
-		loader.list[name].result = loader.results[name] = data
-		loader.num_waiting--
+		if(data.query) data = data.query;
+		loader.list[name].result = loader.results[name] = data;
+		loader.num_waiting--;
 		loader.event.trigger('ready',{left:loader.num_waiting,total:loader.total_tests,name:name,data:data}); 
 		if(loader.num_waiting <= 0){
 			setTimeout(loader.all_complete, 1); //async
@@ -560,15 +598,15 @@ addOnloadHook(function(){jQuery(function($){
 		loader.event.trigger('done');
 		// Reset
 		loader.total_tests=0;
-		loader.event.off(); // Clear all events for another run
+		loader.event.off(); // Unbind all events for another (possible) run
 	};
 	loader.add_callback=function(func){
-		//Compatibility: triggered on `done` event
+		// For compatibility -- triggered on `done` event
 		loader.event.bind('done',func);
 	};
 	
 	loader.reset = function(){
-		// Avoid caching - it messes with the old rating vs new rating code
+		// Avoid caching - it messes with the old rating vs. new rating code
 		loader.key+=Math.floor(Math.random()*1e2)+2;
 	};
 	
@@ -615,8 +653,11 @@ addOnloadHook(function(){jQuery(function($){
 		// Initialize the 'help' view
 		rater.help.init();
 		rater.progress.reset();
-		for(i in rater.metadata.urls){if(i in {})continue;
-			loader.add(i, rater.metadata.urls[i]);
+		for(i in rater.metadata.urls){ if(i in {}) continue;
+			// Request result as JSON
+			var data = $.extend(rater.metadata.urls[i], {format:'json'});
+			var url = wgScriptPath + '/api.php';
+			loader.add(i, url, data);
 		}
 		loader.event.bind('ready',function(e,d){rater.progress.update(d.total-d.left,d.total)});
 		rater.progress.view.appendTo(rater.box);
