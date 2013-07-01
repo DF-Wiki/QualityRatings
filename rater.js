@@ -461,23 +461,19 @@ addOnloadHook(function(){jQuery(function($){
 		editors:{
 			name:'Editor count',
 			init:function(data){
-				all_editors = data.history.match(/<li>.*<\/li>/g)
-				if(!all_editors) return 0; //no editors
-				var editors={};
-				$.each(all_editors, function(i,li){
-					ed = $(li).find('.mw-userlink:nth(0)').text()
-					if(!(ed in editors)) editors[ed]=0;
+				var list = data.history;
+				var editors={total_edits: list.length, total:0};
+				for(i=0; i<list.length; i++){
+					ed = list[i].user;
+					if(!(ed in editors)){
+						editors[ed]=0;
+						editors.total++;
+					}
 					editors[ed]++ 
-				});
-				num=0;
-				for(i in editors){
-					if(i in {}) continue;
-					num++
 				}
-				editors.total=num;editors.total_edits=all_editors.length;
 				return editors;
 			},
-			str:function(o){return o.total},	int:function(o){return o.total;},
+			str:function(o){return o.total}, int:function(o){return o.total;},
 			info:function(o,view){
 				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
 				for(i in o){
