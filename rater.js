@@ -341,7 +341,11 @@ addOnloadHook(function(){jQuery(function($){
 		// API queries (not actual URLs)
 		// Objects are converted to a querystring by jQuery
 		'raw': {
-			
+			action: 'query',
+			prop: 'revisions',
+			titles: rater.page.name,
+			rvprop: 'content',
+			rvlimit: 1,
 		},
 		'render': {
 			action: 'parse',
@@ -365,9 +369,11 @@ addOnloadHook(function(){jQuery(function($){
 		},
 	};
 	
+	// Data filters - apply to object returned from API request
+	// Essentially prevents having to write obj.query.pages[1] too often
 	rater.metadata.data_filters = {
 		'raw': function(obj){
-			
+			return obj.pages[1].revisions[0]['*'];
 		},
 		'render': function(obj){
 			return obj.parse;
