@@ -525,7 +525,7 @@ addOnloadHook(function(){jQuery(function($){
 		verify:{
 			name:'{{Verify}} tags',
 			init:function(data){
-				var m=data.raw.match(/{{verify/g);return +(m&&m.length);
+				var m=data.raw.match(/{{verify/gi);return +(m&&m.length);
 			},
 			score:function(o){if(o<1) return 0; if(o==1) return -10; return o*-20}
 		},
