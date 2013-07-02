@@ -505,8 +505,8 @@ addOnloadHook(function(){jQuery(function($){
 					'nospace':data.raw.replace(/\s/g,'').length,
 					'notemplate':data.raw.replace(/{{[^}]*?}}/g,'').length,
 					'plain':data.raw.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length,
-					'html':data.render.length,
-					'text':$(data.render).text().length
+					'html':data.render.text['*'].length,
+					'text':$(data.render.text['*']).text().length
 				};
 				a.average=Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace + .3*a.text);
 				return a;
