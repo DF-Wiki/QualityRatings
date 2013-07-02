@@ -424,11 +424,20 @@ addOnloadHook(function(){jQuery(function($){
 		links:{
 			name:'Outbound links',
 			init:function(data){
-				return $(data.render).find('a[href*="'+wgScript+'"]').length;
+				return data.render.links.length;
 			},
 			score:function(o){
-				if(o==0) return -25; //no links
+				if(o==0) return -20; //no links
 				return o; //1 point per link
+			}
+		},
+		extlinks:{
+			name:'External links',
+			init:function(data){
+				return data.render.externallinks.length;
+			},
+			score:function(o){
+				return o*0.5;
 			}
 		},
 		linkshere:{
