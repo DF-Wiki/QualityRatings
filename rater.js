@@ -443,11 +443,9 @@ addOnloadHook(function(){jQuery(function($){
 		linkshere:{
 			name:'Incoming links',
 			init:function(data){
-				var ul=$(data.whatlinkshere).find('#mw-whatlinkshere-list').find('li');
-				var a={length:ul.length, list:[]};
-				ul.each(function(i,e){
-					a.list.push($(e).find('a:nth(0)').text());
-					//console.log($(e).text());
+				var a={length:data.backlinks.length, list:[]};
+				$.each(data.backlinks,function(i,p){
+					a.list.push(p.title);
 				});
 				return a;
 			},
