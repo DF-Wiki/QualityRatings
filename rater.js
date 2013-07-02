@@ -532,12 +532,8 @@ addOnloadHook(function(){jQuery(function($){
 		categories:{
 			name:'Categories',
 			init:function(data){
-				var o={}, cats=$('body').find('.catlinks li');
-				o.total=cats.length;
-				o.list=[];
-				cats.each(function(i,e){
-					o.list.push($(e).text());
-				});
+				var cats=data.render.categories, o={total:cats.length,list:[]};
+				$.each(cats,function(i,c){o.list.push(c['*'].replace(/_/g,' '));});
 				return o;
 			},
 			int: function(o){return o.total},
