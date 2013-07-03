@@ -260,6 +260,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.show_link_topicon.hide(500);
 		rater.show_link.addClass('selected');
 		rater.box.append('<p>Performing automatic tests, please wait...</p>');
+		rater.loader_progress = $('<div>').appendTo(rater.box);
 		rater.begin_tests();
 		rater.active=true;
 	};
@@ -669,8 +670,21 @@ addOnloadHook(function(){jQuery(function($){
 			var url = wgScriptPath + '/api.php';
 			loader.add(i, url, data);
 		}
+		function update_progress() {
+			var html="";
+			for (i in loader.list) {
+				html += '<p>'+i.capitalize()+': ';
+				if (loader.list[i].result)
+					html+='Done</p>';
+				else
+					html+='Waiting...</p>'
+			}
+			rater.loader_progress.html(html);
+		}
+		
 		loader.event.bind('ready',function(e,d){rater.progress.update(d.total-d.left,d.total)});
-		rater.progress.view.appendTo(rater.box);
+		loader.event.bind('ready', update_progress);
+		rater.progress.view.insertBefore(rater.loader_progress);
 		loader.event.bind('done', rater.process_tests);
 		loader.event.bind('done', rater.display_test_results);
 		loader.event.bind('done', rater.progress.reset);
