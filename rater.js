@@ -7,7 +7,7 @@ Changes from old version: jQuery, extra automatic tests
 String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.replace(RegExp('\\{'+i+'\\}','g'), arguments[i])};return s};
 String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
 addOnloadHook(function(){jQuery(function($){
-	var rater = {};
+	var rater = {version:'0.9'};
 	
 	// Check for required definitions
 	if(!mw||!('wgScript' in window)) throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
@@ -123,6 +123,8 @@ addOnloadHook(function(){jQuery(function($){
 		$('.topicon').append($("<span>"));
 	}
 	
+	rater.about_link = $('<a>').text('About').attr('href','#rater-about').css({'float':'right',
+		paddingRight:'0.5em'}).appendTo(rater.win);
 	rater.hide_link = $('<a>').text('Hide').attr('href','#rater-hide').css({color:'#f60', 
 		'float':'right', paddingRight:'0.5em'}).appendTo(rater.win);
 	rater.cancel_link = $('<a>').text('Cancel').attr('href','#rater-cancel').css({color:'red', 
@@ -204,7 +206,7 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.box.clear = function(){
 		rater.box.html('')
-		rater.box.append(rater.cancel_link).append(rater.hide_link)
+		rater.box.append(rater.cancel_link).append(rater.hide_link).append(rater.about_link)
 			.append($('<h2>').text('Rating '+rater.page.name));
 		rater.event.trigger('box-clear');
 		return rater.box;
@@ -247,8 +249,7 @@ addOnloadHook(function(){jQuery(function($){
 	
 	// True when the rater box has been opened but not closed (may be hidden)
 	rater.active=false;
-	rater.invoke = function(e, force){
-		PD(e);
+	rater.invoke = function(e, force){PD(e);
 		if(rater.active) return;
 		rater.win.stop(1,1).fadeIn(300);
 		rater.frame.change('main');
@@ -264,8 +265,22 @@ addOnloadHook(function(){jQuery(function($){
 		rater.begin_tests();
 		rater.active=true;
 	};
-	$('body').on('click', 'a[href=#rater-invoke]', rater.invoke)
+	$('body').on('click', 'a[href=#rater-invoke]', rater.invoke);
 	$('body').on('click', 'a[href=#rater-force]', function(e){rater.invoke(e,1)});
+	
+	rater.about = function(e){PD(e);
+		var prevf=rater.frame.current;
+		rater.frame.change('about');
+		var f=rater.frame.current_frame();
+		f.html(
+			'<h2>Rating script</h2><p>v{0}</p>'.format(rater.version)+
+			'<p><a href="https://github.com/lethosor/dfwiki-rater">GitHub repo</a></p>'
+		);
+		$('<a>').attr({href:'#'}).text('Go back').click(function(e){PD(e);
+			rater.frame.change(prevf);
+		}).appendTo(f);
+	};
+	$('body').on('click','a[href=#rater-about]',rater.about);
 	
 	/*
 	nonstd = Non-standard
