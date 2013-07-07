@@ -597,6 +597,7 @@ addOnloadHook(function(){jQuery(function($){
 			q:'Page appearance:',
 			type:'choice',
 			choices:['Poor','Average','Good','Very good','Extremely good'],
+			default_choice:1,
 			score:function(v){return 35*v-50}
 		}
 	};
@@ -781,12 +782,19 @@ addOnloadHook(function(){jQuery(function($){
 			}
 			else if(q.type == 'choice'){
 				qv.text(q.q+' ');
-				for(var i=0; i<q.choices.length; i++){
-					qv.opts[i]=$('<input type="radio">')
-						.attr({id:qid+i,name:qid}).appendTo(qv);
-					qv.opts[i].label=$('<label>').text(q.choices[i])
-						.attr('for',qid+i).appendTo(qv);
+				for(var j=0; j<q.choices.length; j++){
+					qv.opts[j]=$('<input type="radio">').data({q:q, i:i, j:j})
+						.attr({id:qid+j,name:qid}).appendTo(qv);
+					qv.opts[j].label=$('<label>').text(q.choices[j])
+						.attr('for',qid+j).appendTo(qv);
+					qv.opts[j].on('change', function(e){
+						var q=$(this).data('q'), i=$(this).data('i'), j=$(this).data('j');
+						if (!q||!i) return;
+						rater.questions.ans[i] = j;
+						rater.score_questions();
+					});
 				}
+				qv.opts[q.default_choice].prop('checked',true).trigger('change');
 			}
 			qv.appendTo(v);
 		}
