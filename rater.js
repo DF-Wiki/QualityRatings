@@ -779,6 +779,15 @@ addOnloadHook(function(){jQuery(function($){
 				});
 				qv.opts[0].trigger('change'); // set default values
 			}
+			else if(q.type == 'choice'){
+				qv.text(q.q+' ');
+				for(var i=0; i<q.choices.length; i++){
+					qv.opts[i]=$('<input type="radio">')
+						.attr({id:qid+i,name:qid}).appendTo(qv);
+					qv.opts[i].label=$('<label>').text(q.choices[i])
+						.attr('for',qid+i).appendTo(qv);
+				}
+			}
 			qv.appendTo(v);
 		}
 		return v;
