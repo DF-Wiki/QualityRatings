@@ -588,6 +588,11 @@ addOnloadHook(function(){jQuery(function($){
 			type:'bool',
 			score:function(v){return v?40:-35}
 		},
+		cats_ok:{
+			q:'Are the categories appropriate?',
+			type:'bool',
+			score:function(v){return v?25:-15}
+		},
 		appearance:{
 			q:'Page appearance:',
 			type:'choice',
@@ -595,7 +600,7 @@ addOnloadHook(function(){jQuery(function($){
 			score:function(v){return 35*v-50}
 		}
 	};
-	rater.questions={};
+	rater.questions={ans:{}};
 	
 	rater.ratings={
 		tattered:{id:1,color:{b:'#333',bg:'#ccc',c:'#333'},s:'x'},
@@ -763,19 +768,30 @@ addOnloadHook(function(){jQuery(function($){
 			var q=rater.metadata.questions[i];
 			if(q.type == 'bool'){
 				qv.opts[0]=$('<input type="checkbox">').attr({id:qid}).appendTo(qv)
-					.data({q:q});
+					.data({q:q, i:i});
+				//rater.questions.ans[i] = false; //default value
 				qv.opts[0].label=$('<label>').text(q.q).attr({'for':qid}).appendTo(qv);
 				qv.opts[0].on('change', function(e){
-					var q=$(this).data('q'); if (!q) return;
-					var score=q.score($(this).is(':checked'));
-					rater.update_score(rater.score+score);
-				})
+					var q=$(this).data('q'), i=$(this).data('i');
+					if (!q||!i) return;
+					rater.questions.ans[i] = $(this).is(':checked');
+					rater.score_questions();
+				});
+				qv.opts[0].trigger('change'); // set default values
 			}
-			
 			qv.appendTo(v);
 		}
 		return v;
-	}
+	};
+	
+	rater.score_questions=function(){
+		var s=rater.score_orig;
+		for(var i in rater.questions.ans){if(i in {})continue;
+			s+=rater.metadata.questions[i].score(rater.questions.ans[i]);
+		}
+		rater.score=s;
+		rater.update_score(s);
+	};
 	
 	rater.display_test_results=function(){
 		rater.frame.change('main')
@@ -799,6 +815,8 @@ addOnloadHook(function(){jQuery(function($){
 				rater.score += Number(md[i].score(data[i]))
 			}
 		}
+		
+		rater.score_orig = rater.score;
 		
 		rater.box.append(rater.display_questions());
 		
