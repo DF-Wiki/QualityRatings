@@ -48,7 +48,8 @@ addOnloadHook(function(){jQuery(function($){
 			rater.cancel_link.focus();
 		}
 		else if(!rater.page.exists){
-			rater.box.clear().append('<p class="error">This page doesn\'t exist!</p><a href="#rater-cancel">Close this window</a>');rater.box.find('a:nth(1)').focus();
+			rater.box.clear().append('<p class="error">This page doesn\'t exist!</p><a href="#rater-cancel">Close this window</a>');
+			rater.cancel_link.focus();
 		}
 		else if($('#norate').length){
 			rater.box.clear().append('<span class="error">Invalid page</span>')
