@@ -595,6 +595,7 @@ addOnloadHook(function(){jQuery(function($){
 			score:function(v){return 35*v-50}
 		}
 	};
+	rater.questions={};
 	
 	rater.ratings={
 		tattered:{id:1,color:{b:'#333',bg:'#ccc',c:'#333'},s:'x'},
@@ -748,6 +749,28 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	
+	rater.update_score=function(s){
+		rater.score=s;$('.rater-score').text(s);
+	}
+	
+	rater.display_questions=function(){
+		// returns a <div>
+		var v=$('<div>');
+		rater.questions.views={};
+		for(i in rater.metadata.questions){if(i in {})continue;
+			var qv=rater.questions.views[i]=$('<p>'), qid='raterq-'+i;
+			qv.opts=[];
+			var q=rater.metadata.questions[i];
+			if(q.type == 'bool'){
+				qv.opts[0]=$('<input type="checkbox">').attr({id:qid}).appendTo(qv);
+				qv.opts[0].label=$('<label>').text(q.q).attr({'for':qid}).appendTo(qv);
+			}
+			
+			qv.appendTo(v);
+		}
+		return v;
+	}
+	
 	rater.display_test_results=function(){
 		rater.frame.change('main')
 		var md=rater.metadata.tests;
@@ -771,8 +794,9 @@ addOnloadHook(function(){jQuery(function($){
 			}
 		}
 		
-		rater.box.append($("<p>").text("Score: "+rater.score))
-		//rater.select.init($("<div>").appendTo(rater.box));
+		rater.box.append(rater.display_questions());
+		
+		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>".format(rater.score)));
 		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'1em',right:'0'})
 		
 		rater.event.trigger('results-displayed')
