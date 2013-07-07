@@ -572,6 +572,30 @@ addOnloadHook(function(){jQuery(function($){
 		}
 	};
 	
+	rater.metadata.questions = {
+		enough_info:{
+			q:'Does the page contain a decent amount of information?',
+			type:'bool',
+			score:function(v){return v?40:-50;}
+		},
+		inaccurate:{
+			q:'Does the page contain any inaccurate information?',
+			type:'bool',
+			score:function(v){return v?20:-50;}
+		},
+		understandable:{
+			q:'Is the page easy to understand?',
+			type:'bool',
+			score:function(v){return v?40:-35}
+		},
+		appearance:{
+			q:'Page appearance:',
+			type:'choice',
+			choices:['Poor','Average','Good','Very good','Extremely good'],
+			score:function(v){return 35*v-50}
+		}
+	};
+	
 	rater.ratings={
 		tattered:{id:1,color:{b:'#333',bg:'#ccc',c:'#333'},s:'x'},
 		fine:{id:2,color:{b:'#db8',bg:'#ffe0cc',c:'#ca7a02'},s:'+'},
