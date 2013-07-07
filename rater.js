@@ -581,10 +581,10 @@ addOnloadHook(function(){jQuery(function($){
 		inaccurate:{
 			q:'Does the page contain any inaccurate information?',
 			type:'bool',
-			score:function(v){return v?20:-50;}
+			score:function(v){return v?-50:20;}
 		},
 		understandable:{
-			q:'Is the page easy to understand?',
+			q:'Is the page relatively easy to understand?',
 			type:'bool',
 			score:function(v){return v?40:-35}
 		},
@@ -757,13 +757,19 @@ addOnloadHook(function(){jQuery(function($){
 		// returns a <div>
 		var v=$('<div>');
 		rater.questions.views={};
-		for(i in rater.metadata.questions){if(i in {})continue;
+		for(var i in rater.metadata.questions){if(i in {})continue;
 			var qv=rater.questions.views[i]=$('<p>'), qid='raterq-'+i;
 			qv.opts=[];
 			var q=rater.metadata.questions[i];
 			if(q.type == 'bool'){
-				qv.opts[0]=$('<input type="checkbox">').attr({id:qid}).appendTo(qv);
+				qv.opts[0]=$('<input type="checkbox">').attr({id:qid}).appendTo(qv)
+					.data({q:q});
 				qv.opts[0].label=$('<label>').text(q.q).attr({'for':qid}).appendTo(qv);
+				qv.opts[0].on('change', function(e){
+					var q=$(this).data('q'); if (!q) return;
+					var score=q.score($(this).is(':checked'));
+					rater.update_score(rater.score+score);
+				})
 			}
 			
 			qv.appendTo(v);
