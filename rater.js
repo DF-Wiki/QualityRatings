@@ -924,7 +924,7 @@ addOnloadHook(function(){jQuery(function($){
 		// Get token - most of these messages are left over
 		w('Getting token... ');
 		var token = mw.user.tokens.values.editToken;
-		rater.progress.update(1,4);
+		rater.progress.update(1,3);
 		w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,8)));
 		var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
@@ -933,16 +933,15 @@ addOnloadHook(function(){jQuery(function($){
 		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added quality rating "{0}" using the rating script'.format(rating)
 		if(rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
 		
-		rater.progress.update(2,4);
 		var save=function(){
 			rater.overlay.fadeIn(400);
 			rater.update_page=function(){
-				rater.progress.update(3,4);
+				rater.progress.update(2,3);
 				w('Finished!\nUpdating...');
 				// Parse {{quality}} with the new rating
 				$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
 				function(d){
-					rater.progress.update(4,4);
+					rater.progress.update(3,3);
 					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
 					// Replace categories
 					$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
