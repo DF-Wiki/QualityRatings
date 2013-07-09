@@ -152,11 +152,12 @@ addOnloadHook(function(){jQuery(function($){
 		PD(e);
 		rater.popup.overlay.stop(1,1).fadeOut(300);
 		rater.popup.box.stop(1,1).fadeOut(300);
+		$('body').off('keydown', rater.popup.esc);
 	};
 	rater.popup.esc = function(e){
 		if (e.keyCode == 27) { //esc
+			PD(e);
 			rater.popup.hide();
-			$('body').off('keydown', rater.popup.esc);
 		}
 	};
 	
