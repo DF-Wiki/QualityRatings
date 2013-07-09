@@ -851,7 +851,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.box.append(rater.display_questions());
 		
 		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>".format(rater.score)));
-		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo(rater.box).css({position:'absolute',top:'1em',right:'0'})
+		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo($('<p>').appendTo(rater.box));
 		
 		rater.event.trigger('results-displayed')
 	};
