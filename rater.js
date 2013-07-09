@@ -146,20 +146,24 @@ addOnloadHook(function(){jQuery(function($){
 		PD(e);
 		rater.popup.box.stop(1,1).fadeIn(300);
 		rater.popup.overlay.stop(1,1).fadeIn(300);
-		$('body').on('keydown', rater.popup.esc);
+		$('body').on('keydown', rater.popup.esc_key);
 	};
 	rater.popup.hide = rater.popup_hide = function(e){
 		PD(e);
 		rater.popup.overlay.stop(1,1).fadeOut(300);
 		rater.popup.box.stop(1,1).fadeOut(300);
-		$('body').off('keydown', rater.popup.esc);
+		$('body').off('keydown', rater.popup.esc_key);
 	};
-	rater.popup.esc = function(e){
+	rater.popup.esc_key = function(e){
 		if (e.keyCode == 27) { //esc
 			PD(e);
 			rater.popup.hide();
 		}
 	};
+	rater.popup.esc_click = function(e){ // exit for click events
+		PD(e); rater.popup.hide();
+	};
+	rater.popup.overlay.click(rater.popup.esc_click);
 	
 	rater.Dialog = function(opts){
 		var t={}; //'this'
