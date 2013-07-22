@@ -1024,8 +1024,17 @@ addOnloadHook(function(){jQuery(function($){
 	var mini = rater.mini = {};
 	mini.init = function(e){PD(e);
 		// Determine current rating from category links
-		rater.tests.current_rating = $('.catlinks li a:contains(Quality Articles)').text().split(':')[1].split(' ')[0];
+		var catlinks = $('.catlinks li a:contains(Quality Articles)');
+		if (catlinks.length)
+			rater.tests.current_rating = catlinks.text().split(':')[1].split(' ')[0];
+		else
+			rater.tests.current_rating = '';
+		// Display the default selection system, but hide the links
 		rater.select.init();
+		rater.select.cancel_link.hide();
+		rater.select.submit_link.hide();
+		rater.select.reset_link.hide();
+		rater.show_link_topicon.hide();
 	};
 	// $(mini.init);
 	/* End mini rater */
