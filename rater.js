@@ -206,8 +206,8 @@ addOnloadHook(function(){jQuery(function($){
 	rater.frame={list:{}};
 	rater.frame.current_frame=function(){return rater.frame.list[rater.frame.current]}
 	rater.frame.change=function(name){
-		if(rater.frame.current) $('.rater-frame').hide().css({margin:'1em'});
-		if(!(name in rater.frame.list)){
+		if (rater.frame.current) $('.rater-frame').hide().css({margin:'1em'});
+		if (!(name in rater.frame.list)) {
 			rater.frame.list[name]=$('<div>').addClass('rater-frame').css({margin:'1em',position:'relative'});
 		}
 		rater.frame.list[name].appendTo(rater.win.inner).show();
@@ -230,7 +230,7 @@ addOnloadHook(function(){jQuery(function($){
 		PD(e);rater.show_link.removeClass('selected');
 		rater.overlay.stop(1,1).fadeOut(300);
 		rater.win.stop(1,1).fadeOut(300);
-		if(rater.is_valid_page() || rater.rating_exists) rater.show_link_topicon.show(500);
+		if (rater.is_valid_page() || rater.rating_exists) rater.show_link_topicon.show(500);
 		rater.active=false;
 	};
 	// True when in the middle of a rating
@@ -242,7 +242,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.in_progress = true;
 	};
 	rater.resume = function(e){PD(e);
-		if(!rater.in_progress) return;
+		if (!rater.in_progress) return;
 		rater.resume_link.hide();
 		rater.win.fadeIn(300);
 	};
@@ -263,11 +263,14 @@ addOnloadHook(function(){jQuery(function($){
 	// True when the rater box has been opened but not closed (may be hidden)
 	rater.active=false;
 	rater.invoke = function(e, force){PD(e);
+		if (e.shiftKey) {
+			rater.mini.init(); return;
+		}
 		if(rater.active) return;
 		rater.win.stop(1,1).fadeIn(300);
 		rater.frame.change('main');
 		rater.box.clear();
-		if(!rater.is_valid_page(wgPageName) && !force){
+		if (!rater.is_valid_page(wgPageName) && !force) {
 			rater.error_invalid_page();
 			return;
 		}
@@ -1012,6 +1015,20 @@ addOnloadHook(function(){jQuery(function($){
 		});
 		return event;
 	};
+	
+	/*
+	 * rater.mini: Compact version of rater
+	 * Bypasses all tests
+	 */
+	
+	var mini = rater.mini = {};
+	mini.init = function(e){PD(e);
+		// Determine current rating from category links
+		rater.tests.current_rating = $('.catlinks li a:contains(Quality Articles)').text().split(':')[1].split(' ')[0];
+		rater.select.init();
+	};
+	// $(mini.init);
+	/* End mini rater */
 	
 	//check for a provided hash...
 	if(window.location.hash.length){
