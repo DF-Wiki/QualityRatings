@@ -774,7 +774,8 @@ addOnloadHook(function(){jQuery(function($){
 	
 	rater.display_questions=function(){
 		// returns a <div>
-		var v=$('<div>');
+		var v=$('<div class="rater-questions">').html('<h3>Page content</h3>');
+		v.prepend('<span style="color:#888">&uarr; Automatic test results displayed above</span>')
 		rater.questions.views={};
 		for(var i in rater.metadata.questions){if(i in {})continue;
 			var qv=rater.questions.views[i]=$('<p>'), qid='raterq-'+i;
@@ -850,7 +851,10 @@ addOnloadHook(function(){jQuery(function($){
 		
 		rater.box.append(rater.display_questions());
 		// scroll to questions
-		rater.win.inner.animate({scrollTop:1000}, 500);
+		rater.win.inner.animate({
+				scrollTop: rater.frame.current_frame().find('.rater-questions').position().top +
+						parseInt(rater.win.css('padding')) * 2
+		}, 400);
 		
 		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>".format(rater.score)));
 		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;')
