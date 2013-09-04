@@ -785,7 +785,7 @@ addOnloadHook(function(){jQuery(function($){
 	rater.display_questions=function(){
 		// returns a <div>
 		var v=$('<div class="rater-questions">').html('<h3>Page content</h3>');
-		v.prepend('<span style="color:#888">&uarr; Automatic test results displayed above</span>')
+		v.prepend('<span style="color:#888; font-size:0.75em;">&uarr; Automatic test results displayed above</span>')
 		rater.questions.views={};
 		for(var i in rater.metadata.questions){if(i in {})continue;
 			var qv=rater.questions.views[i]=$('<p>'), qid='raterq-'+i;
@@ -869,8 +869,11 @@ addOnloadHook(function(){jQuery(function($){
 		
 		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>" .format(rater.score)));
 		rater.box.append($("<p>").html("Suggested rating: <span class='rater-suggest'></span>"));
-		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;')
-				.css({color:'#0a0'}).appendTo($('<p>').appendTo(rater.box));
+		var links = $('<p>').appendTo(rater.box);
+		$("<a>").attr({href:'#rater-save'}).html('Save')
+				.css({color:'#090'}).appendTo(links);
+		$("<a>").attr({href:'#rater-override'}).html('Override')
+				.appendTo(links.append(' | '));
 		
 		rater.update_score(rater.score);
 		rater.event.trigger('results-displayed');
@@ -885,6 +888,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.draw();
 	};
 	$('body').on('click','a[href=#rater-override]',rater.select.init);
+
 	rater.select.draw=function(){
 		$('.topicon > span').hide();
 		var c, selected, a, 
@@ -936,6 +940,12 @@ addOnloadHook(function(){jQuery(function($){
 		rater.submit_rating();
 	});
 	
+	rater.submit_suggested = function(e){PD(e);
+		console.log('Saving');
+		rater.select.current = rater.suggested_rating;
+		rater.submit_rating();
+	};
+	$('body').on('click','a[href=#rater-save]',rater.submit_suggested);	
 	rater.submit_rating=function(){
 		// Set up UI
 		rater.overlay.fadeIn(400);
