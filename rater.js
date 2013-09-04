@@ -874,6 +874,7 @@ addOnloadHook(function(){jQuery(function($){
 				.css({color:'#090'}).appendTo(links);
 		$("<a>").attr({href:'#rater-override'}).html('Override')
 				.appendTo(links.append(' | '));
+		if (!rater.is_valid_page()) links.hide(); 
 		
 		rater.update_score(rater.score);
 		rater.event.trigger('results-displayed');
