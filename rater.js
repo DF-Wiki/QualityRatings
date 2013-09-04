@@ -849,9 +849,12 @@ addOnloadHook(function(){jQuery(function($){
 		rater.score_orig = rater.score;
 		
 		rater.box.append(rater.display_questions());
+		// scroll to questions
+		rater.win.inner.animate({scrollTop:1000}, 500);
 		
 		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>".format(rater.score)));
-		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo($('<p>').appendTo(rater.box));
+		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;')
+				.css({color:'#0a0'}).appendTo($('<p>').appendTo(rater.box));
 		
 		rater.event.trigger('results-displayed')
 	};
@@ -942,8 +945,8 @@ addOnloadHook(function(){jQuery(function($){
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
-		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added quality rating "{0}" using the rating script'.format(rating)
-		if(rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
+		var summary = (old_rating!='')?'Changed [[DF:Q|quality rating]] from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added [[DF:Q|quality rating]] "{0}" using the rating script'.format(rating)
+		if(rating==old_rating) summary='Updated [[DF:Q|quality rating]] timestamp ("{0}") using the rating script'.format(rating)
 		
 		var save=function(){
 			rater.overlay.fadeIn(400);
