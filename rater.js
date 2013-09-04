@@ -624,6 +624,13 @@ addOnloadHook(function(){jQuery(function($){
 		masterwork:{id:5,color:{b:'#bd8',bg:'#e2fdce',c:'#72a329'},s:'\u263c'}
 	};
 	rater.rating_arr=['tattered','fine','superior','exceptional','masterwork'];
+	rater.rating_scores = [0, 50, 160, 350];
+	rater.rating_score = function(score){
+		for (var i=0; i<4; i++) {
+				if (score < rater.rating_scores[i]) return rater.rating_arr[i]; 
+		}
+		return 'masterwork';
+	}
 	
 	/* Stores the results of tests */
 	rater.tests={};
@@ -769,7 +776,10 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	
 	rater.update_score=function(s){
-		rater.score=s;$('.rater-score').text(s);
+		rater.score = s;
+		$('.rater-score').text(s);
+		rater.suggested_rating = rater.rating_score(rater.score);
+		$('.rater-suggest').text(rater.suggested_rating.capitalize());
 	}
 	
 	rater.display_questions=function(){
@@ -822,6 +832,7 @@ addOnloadHook(function(){jQuery(function($){
 		}
 		rater.score=s;
 		rater.update_score(s);
+		rater.suggested_rating = rater.rating_score(rater.score);
 	};
 	
 	rater.display_test_results=function(){
@@ -856,18 +867,20 @@ addOnloadHook(function(){jQuery(function($){
 						parseInt(rater.win.css('padding')) * 2
 		}, 400);
 		
-		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>".format(rater.score)));
+		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>" .format(rater.score)));
+		rater.box.append($("<p>").html("Suggested rating: <span class='rater-suggest'></span>"));
 		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;')
 				.css({color:'#0a0'}).appendTo($('<p>').appendTo(rater.box));
 		
-		rater.event.trigger('results-displayed')
+		rater.update_score(rater.score);
+		rater.event.trigger('results-displayed');
 	};
 	rater.select={};
 	rater.select.view=$("<div>").css({padding:'.2em'});
 	rater.select.init=function(e){PD(e);
 		rater.frame.change('rating-desc');
 		rater.select.frame=rater.frame.current_frame();
-		rater.select.current=rater.tests.current_rating.toLowerCase()||'tattered';
+		rater.select.current=rater.suggested_rating.toLowerCase();
 		rater.select.view.appendTo(rater.select.frame);
 		rater.select.draw();
 	};
