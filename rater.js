@@ -1012,7 +1012,7 @@ addOnloadHook(function(){jQuery(function($){
 		function cancel(){
 			rater.popup.hide()
 			// Go back to the rating description
-			rater.frame.change('rating-desc')
+			rater.frame.change(('rating-desc' in rater.frame.list) ? 'rating-desc' : 'main');
 			rater.overlay.fadeOut(400);
 		};
 		if(rating == old_rating){
