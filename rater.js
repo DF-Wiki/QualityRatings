@@ -35,7 +35,7 @@ addOnloadHook(function(){jQuery(function($){
 		if(!rater.page.exists) return false;
 		if(!page) page=wgPageName;
 		if($('#norate').length) return false
-		if('Masterwork DF2012 v0.31 40d 23a'.split(' ').indexOf(rater.page.ns)+1) return true
+		if('Masterwork DF2012 v0.31 40d 23a Utility'.split(' ').indexOf(rater.page.ns)+1) return true
 		return false
 	};
 	
