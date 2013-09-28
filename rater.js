@@ -7,7 +7,7 @@ Changes from old version: jQuery, extra automatic tests
 String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.replace(RegExp('\\{'+i+'\\}','g'), arguments[i])};return s};
 String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
 addOnloadHook(function(){jQuery(function($){
-	var rater = {version:'1.0-beta'};
+	var rater = {version:'1.0-beta 2'};
 	
 	// Check for required definitions
 	if(!mw||!('wgScript' in window)) throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
@@ -31,11 +31,10 @@ addOnloadHook(function(){jQuery(function($){
 		load_time:$('body').html().match(/<!--.*-->/g).slice(-1)[0].match(/\d+\.\d+/)[0]
 	}
 	
-	rater.is_valid_page = function(page){
+	rater.is_valid_page = function(){
 		if(!rater.page.exists) return false;
-		if(!page) page=wgPageName;
 		if($('#norate').length) return false
-		if('Masterwork DF2012 v0.31 40d 23a'.split(' ').indexOf(rater.page.ns)+1) return true
+		if('Masterwork DF2012 v0.31 40d 23a Utility'.split(' ').indexOf(rater.page.ns)+1) return true
 		return false
 	};
 	
@@ -270,7 +269,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.win.stop(1,1).fadeIn(300);
 		rater.frame.change('main');
 		rater.box.clear();
-		if (!rater.is_valid_page(wgPageName) && !force) {
+		if(!rater.is_valid_page() && !force){
 			rater.error_invalid_page();
 			return;
 		}
@@ -526,7 +525,7 @@ addOnloadHook(function(){jQuery(function($){
 				if(n==1) return 0;
 				if(n==2) return 6;
 				if(n==3) return 14;
-				return 20*n;
+				return 5.5*n;
 			}
 		},
 		length:{
@@ -627,6 +626,13 @@ addOnloadHook(function(){jQuery(function($){
 		masterwork:{id:5,color:{b:'#bd8',bg:'#e2fdce',c:'#72a329'},s:'\u263c'}
 	};
 	rater.rating_arr=['tattered','fine','superior','exceptional','masterwork'];
+	rater.rating_scores = [0, 50, 160, 350];
+	rater.rating_score = function(score){
+		for (var i=0; i<4; i++) {
+				if (score < rater.rating_scores[i]) return rater.rating_arr[i]; 
+		}
+		return 'masterwork';
+	}
 	
 	/* Stores the results of tests */
 	rater.tests={};
@@ -772,12 +778,16 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	
 	rater.update_score=function(s){
-		rater.score=s;$('.rater-score').text(s);
+		rater.score = s;
+		$('.rater-score').text(s);
+		rater.suggested_rating = rater.rating_score(rater.score);
+		$('.rater-suggest').text(rater.suggested_rating.capitalize());
 	}
 	
 	rater.display_questions=function(){
 		// returns a <div>
-		var v=$('<div>');
+		var v=$('<div class="rater-questions">').html('<h3>Page content</h3>');
+		v.prepend('<span style="color:#888; font-size:0.75em;">&uarr; Automatic test results displayed above</span>')
 		rater.questions.views={};
 		for(var i in rater.metadata.questions){if(i in {})continue;
 			var qv=rater.questions.views[i]=$('<p>'), qid='raterq-'+i;
@@ -824,6 +834,7 @@ addOnloadHook(function(){jQuery(function($){
 		}
 		rater.score=s;
 		rater.update_score(s);
+		rater.suggested_rating = rater.rating_score(rater.score);
 	};
 	
 	rater.display_test_results=function(){
@@ -852,22 +863,35 @@ addOnloadHook(function(){jQuery(function($){
 		rater.score_orig = rater.score;
 		
 		rater.box.append(rater.display_questions());
+		// scroll to questions
+		rater.win.inner.animate({
+				scrollTop: rater.frame.current_frame().find('.rater-questions').position().top +
+						parseInt(rater.win.css('padding')) * 2
+		}, 400);
 		
-		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>".format(rater.score)));
-		$("<a>").attr({href:'#rater-override'}).html('Select rating &rarr;').appendTo($('<p>').appendTo(rater.box));
+		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>" .format(rater.score)));
+		rater.box.append($("<p>").html("Suggested rating: <span class='rater-suggest'></span>"));
+		var links = $('<p>').appendTo(rater.box);
+		$("<a>").attr({href:'#rater-save'}).html('Save')
+				.css({color:'#090'}).appendTo(links);
+		$("<a>").attr({href:'#rater-override'}).html('Override')
+				.appendTo(links.append(' | '));
+		if (!rater.is_valid_page()) links.hide(); 
 		
-		rater.event.trigger('results-displayed')
+		rater.update_score(rater.score);
+		rater.event.trigger('results-displayed');
 	};
 	rater.select={};
 	rater.select.view=$("<div>").css({padding:'.2em'});
 	rater.select.init=function(e){PD(e);
 		rater.frame.change('rating-desc');
 		rater.select.frame=rater.frame.current_frame();
-		rater.select.current=rater.tests.current_rating.toLowerCase()||'tattered';
+		rater.select.current=rater.suggested_rating.toLowerCase();
 		rater.select.view.appendTo(rater.select.frame);
 		rater.select.draw();
 	};
 	$('body').on('click','a[href=#rater-override]',rater.select.init);
+
 	rater.select.draw=function(){
 		$('.topicon > span').hide();
 		var c, selected, a, 
@@ -919,6 +943,12 @@ addOnloadHook(function(){jQuery(function($){
 		rater.submit_rating();
 	});
 	
+	rater.submit_suggested = function(e){PD(e);
+		console.log('Saving');
+		rater.select.current = rater.suggested_rating;
+		rater.submit_rating();
+	};
+	$('body').on('click','a[href=#rater-save]',rater.submit_suggested);	
 	rater.submit_rating=function(){
 		// Set up UI
 		rater.overlay.fadeIn(400);
@@ -945,8 +975,8 @@ addOnloadHook(function(){jQuery(function($){
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
-		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added quality rating "{0}" using the rating script'.format(rating)
-		if(rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
+		var summary = (old_rating!='')?'Changed [[DF:Q|quality rating]] from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added [[DF:Q|quality rating]] "{0}" using the rating script'.format(rating)
+		if(rating==old_rating) summary='Updated [[DF:Q|quality rating]] timestamp ("{0}") using the rating script'.format(rating)
 		
 		var save=function(){
 			rater.overlay.fadeIn(400);
@@ -985,7 +1015,7 @@ addOnloadHook(function(){jQuery(function($){
 		function cancel(){
 			rater.popup.hide()
 			// Go back to the rating description
-			rater.frame.change('rating-desc')
+			rater.frame.change(('rating-desc' in rater.frame.list) ? 'rating-desc' : 'main');
 			rater.overlay.fadeOut(400);
 		};
 		if(rating == old_rating){
