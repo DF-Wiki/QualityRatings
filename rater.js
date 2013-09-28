@@ -31,9 +31,8 @@ addOnloadHook(function(){jQuery(function($){
 		load_time:$('body').html().match(/<!--.*-->/g).slice(-1)[0].match(/\d+\.\d+/)[0]
 	}
 	
-	rater.is_valid_page = function(page){
+	rater.is_valid_page = function(){
 		if(!rater.page.exists) return false;
-		if(!page) page=wgPageName;
 		if($('#norate').length) return false
 		if('Masterwork DF2012 v0.31 40d 23a Utility'.split(' ').indexOf(rater.page.ns)+1) return true
 		return false
@@ -267,7 +266,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.win.stop(1,1).fadeIn(300);
 		rater.frame.change('main');
 		rater.box.clear();
-		if(!rater.is_valid_page(wgPageName) && !force){
+		if(!rater.is_valid_page() && !force){
 			rater.error_invalid_page();
 			return;
 		}
