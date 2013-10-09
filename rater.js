@@ -986,15 +986,16 @@ addOnloadHook(function(){jQuery(function($){
 					rater.progress.update(3,3);
 					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
 					// Replace categories
-					$('.catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
+					$('.mw-normal-catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
 					var cats = d.parse.categories;
 					for(i=0;i<cats.length;i++){
-						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' ')).appendTo($("<li>").appendTo('.catlinks ul'));
+						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' '))
+								.appendTo($("<li>").appendTo('.mw-normal-catlinks ul'));
 					}
-				
-					$('.catlinks li a:hidden').remove();
-					$('.catlinks li:empty').remove();
-				
+					
+					$('.mw-normal-catlinks li a:hidden').remove();
+					$('.mw-normal-catlinks li:empty').remove();
+					
 					rater.progress.update(5,4);
 					rater.cancel();
 					jsMsg('Rated article <b>'+rating+'</b>');
