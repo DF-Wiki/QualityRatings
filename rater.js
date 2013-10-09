@@ -455,8 +455,8 @@ addOnloadHook(function(){jQuery(function($){
 				return data.render.links.length;
 			},
 			score:function(o){
-				if(o==0) return -20; //no links
-				return o; //1 point per link
+				if(o==0) return -20; // no links
+				return Math.min(o, 20); // 1 point per link, capped at 20
 			}
 		},
 		extlinks:{
