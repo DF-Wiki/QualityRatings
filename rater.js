@@ -972,8 +972,9 @@ addOnloadHook(function(){jQuery(function($){
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
-		var summary = (old_rating!='')?'Changed [[DF:Q|quality rating]] from "{0}" to "{1}" using the rating script'.format(old_rating,rating):'Added [[DF:Q|quality rating]] "{0}" using the rating script'.format(rating)
-		if(rating==old_rating) summary='Updated [[DF:Q|quality rating]] timestamp ("{0}") using the rating script'.format(rating)
+		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating)
+			:'Added quality rating "{0}" using the rating script'.format(rating)
+		if(rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
 		
 		var save=function(){
 			rater.overlay.fadeIn(400);
@@ -1034,8 +1035,12 @@ addOnloadHook(function(){jQuery(function($){
 			summary:'',
 			token:mw.user.tokens.values.editToken,
 			title:rater.page.name,
-			minor:0
+			minor:0,
+			auto_link: true,
 		},opts);
+		if (opts.auto_link)
+			opts.summary = opts.summary.replace(/rating\s+script/gi, '[[DF:Rater|rating script]]')
+				.replace(/quality rating/gi, '[[DF:Q|quality rating]]');
 		var event=$({}); // For attaching callbacks
 		$.post(wgScriptPath+'/api.php', {action:'edit', title:opts.title, text:opts.text,
 		token:opts.token, minor:opts.minor, summary:opts.summary},function(d){
