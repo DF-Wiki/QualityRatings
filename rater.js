@@ -311,7 +311,7 @@ addOnloadHook(function(){jQuery(function($){
 		'mark-unrated':{
 			desc: 'Mark as unrated',
 			process: function(data){
-				return data.replace(/{{quality[^}]*?}}\n*/gi,'')+'{{quality|Unrated|~~~~~}}\n';
+				return '{{quality|Unrated|~~~~~}}\n' + data.replace(/{{quality[^}]*?}}\n*/gi,'');
 			},
 			summary:'Changed quality rating from "{0}" to "Unrated"',
 			needs_valid: true
