@@ -5,6 +5,7 @@ require_once 'QualityRatings.body.php';
 $wgResourceModules['ext.QualityRatings'] = array(
 	'scripts' => array(
 		'../rater.js',
+		'modules/jquery.color-2.1.0.min.js'
 	),
 	'localBasePath' => __DIR__,
 	'remoteExtPath' => 'QualityRatings',
