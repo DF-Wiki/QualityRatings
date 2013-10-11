@@ -924,7 +924,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.help.view.appendTo(view);
 		rater.help.update(selected&&selected.id||0);
 		// Animate arrow
-		rater.win.arrow.animate({
+		rater.win.arrow.stop().animate({
 			left: $('.topicon .active:visible').offset().left - rater.win.inner.offset().left + $('.topicon .active:visible').width()/2
 		}, 250);
 	};
@@ -940,13 +940,13 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.reset();
 		$('.topicon > span').hide().filter(':nth(0)').show();
 		rater.frame.change('main');
-		rater.win.arrow.animate({left: rater.win.arrow.data('default-left')}, 250);
+		rater.win.arrow.stop().animate({left: rater.win.arrow.data('default-left')}, 250);
 	};
 	
 	$('body').on('click','a[href=#rater-select-reset]',rater.select.reset);
 	$('body').on('click','a[href=#rater-select-cancel]',rater.select.cancel);
 	$('body').on('click','a[href=#rater-select-submit]',function(e){PD(e);
-		rater.win.arrow.animate({left: rater.win.arrow.data('default-left')}, 250);
+		rater.win.arrow.stop().animate({left: rater.win.arrow.data('default-left')}, 250);
 		rater.submit_rating();
 	});
 	
