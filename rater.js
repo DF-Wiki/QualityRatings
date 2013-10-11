@@ -264,6 +264,8 @@ addOnloadHook(function(){jQuery(function($){
 	rater.invoke = function(e, force){PD(e);
 		if(rater.active) return;
 		rater.win.stop(1,1).fadeIn(300);
+		rater.win.arrow.css({left:rater.win.arrow.position().left});
+		rater.win.arrow.data('default-left', rater.win.arrow.css('left'));
 		rater.frame.change('main');
 		rater.box.clear();
 		if(!rater.is_valid_page() && !force){
@@ -886,6 +888,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.current=rater.suggested_rating.toLowerCase();
 		rater.select.view.appendTo(rater.select.frame);
 		rater.select.draw();
+		$('.topicon').css({backgroundColor:'#ff3'}).delay(300).animate({backgroundColor:'#fff'}, 700);
 	};
 	$('body').on('click','a[href=#rater-override]',rater.select.init);
 
@@ -905,6 +908,7 @@ addOnloadHook(function(){jQuery(function($){
 			if(i==rater.select.current){
 				selected=rater.ratings[i];
 				a.find('span').css({'border-color':c.color.b,'background-color':c.color.bg,'border-width':1,'border-style':'solid','border-radius':2,padding:'.2em'})
+					.addClass('active');
 			}
 			a.on('click focus',rater.select.click);
 			list.append(' ');
@@ -919,6 +923,10 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.cancel_link.clone().appendTo(view)
 		rater.help.view.appendTo(view);
 		rater.help.update(selected&&selected.id||0);
+		// Animate arrow
+		rater.win.arrow.animate({
+			left: $('.topicon .active:visible').offset().left - rater.win.inner.offset().left + $('.topicon .active:visible').width()/2
+		}, 250);
 	};
 	
 	rater.select.click=function(e){if(e.type=='click')PD(e);
@@ -932,11 +940,13 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.reset();
 		$('.topicon > span').hide().filter(':nth(0)').show();
 		rater.frame.change('main');
+		rater.win.arrow.animate({left: rater.win.arrow.data('default-left')}, 250);
 	};
 	
 	$('body').on('click','a[href=#rater-select-reset]',rater.select.reset);
 	$('body').on('click','a[href=#rater-select-cancel]',rater.select.cancel);
 	$('body').on('click','a[href=#rater-select-submit]',function(e){PD(e);
+		rater.win.arrow.animate({left: rater.win.arrow.data('default-left')}, 250);
 		rater.submit_rating();
 	});
 	
@@ -1066,4 +1076,3 @@ addOnloadHook(function(){jQuery(function($){
 	rater.loader=loader;window.rater=rater;return rater;
 });});
 // </nowiki>
-
