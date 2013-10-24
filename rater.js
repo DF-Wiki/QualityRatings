@@ -313,7 +313,7 @@ addOnloadHook(function(){jQuery(function($){
 		'mark-unrated':{
 			desc: 'Mark as unrated',
 			process: function(data){
-				return '{{quality|Unrated|~~~~~}}\n' + data.replace(/{{quality[^}]*?}}\n*/gi,'');
+				return '{{quality|Unrated|~~~~~}}\n' + data.replace(/\s*{{quality[^}]*?}}\s*\n*/gi,'');
 			},
 			summary:'Changed quality rating from "{0}" to "Unrated"',
 			needs_valid: true
@@ -978,7 +978,7 @@ addOnloadHook(function(){jQuery(function($){
 		var token = mw.user.tokens.values.editToken;
 		rater.progress.update(1,3);
 		w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,8)));
-		var text=rater.loader.results.raw.replace(/{{quality[^}]*?}}\n*/gi,'');
+		var text=rater.loader.results.raw.replace(/\s*{{quality[^}]*?}}\s*\n*/gi,'');
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
