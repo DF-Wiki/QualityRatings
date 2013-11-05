@@ -12,6 +12,7 @@ $wgResourceModules['ext.QualityRatings'] = array(
 );
 
 $wgHooks['BeforePageDisplay'][] = 'QualityRatingHooks::includeModules';
+$wgHooks['GetPreferences'][] = 'QualityRatingHooks::getPreferences';
 
 /*
  * Credits for Special:Version
