@@ -24,6 +24,6 @@ $wgExtensionCredits['QualityRatings'][] = array(
 	'author' =>'[[User:Lethosor|Lethosor]]',
 	'url' => 'https://github.com/lethosor/dfwiki-rater',
 	'description' => 'Dwarf Fortress wiki rating script',
-	'version'  => '1.0.1',
+	'version'  => '1.0.2',
 );
 
