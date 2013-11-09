@@ -978,7 +978,7 @@ addOnloadHook(function(){jQuery(function($){
 		var token = mw.user.tokens.values.editToken;
 		rater.progress.update(1,3);
 		w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,8)));
-		var text=rater.loader.results.raw.replace(/\s*{{quality[^}]*?}}\s*\n*/gi,'');
+		var text=rater.loader.results.raw.replace(/ *{{quality[^}]*?}} */gi, '');
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
