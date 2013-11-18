@@ -9,9 +9,15 @@ $wgResourceModules['ext.QualityRatings'] = array(
 	),
 	'localBasePath' => __DIR__,
 	'remoteExtPath' => 'QualityRatings',
+	'messages' => array(
+		'rater-enable-ns',
+		'rater-disable-ns',
+	),
 );
 
 $wgHooks['BeforePageDisplay'][] = 'QualityRatingHooks::includeModules';
+$wgExtensionMessagesFiles['QualityRatings'] = __DIR__ . '/QualityRatings.i18n.php';
+
 
 /*
  * Credits for Special:Version
