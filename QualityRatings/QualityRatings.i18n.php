@@ -4,7 +4,7 @@ $messages = array();
 
 $messages['en'] = array(
 	'rater-enable-ns' => '',
-	'rater-disable-ns' => '',
+	'rater-disable-ns' => "*Special\n*File",
 );
 
 $messages['qqq'] = array(

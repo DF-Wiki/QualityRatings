@@ -16,7 +16,7 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	
 	for (i in rater.namespaces) { if (i in {}) continue;
-		rater.namespaces[i] = ('\n' + mw.message('rater-' + i + '-ns').text()).replace(/\n\*\s*/g, '\n').replace(/^\n/, '').split('\n');
+		rater.namespaces[i] = ('\n' + mw.message('rater-' + i + '-ns').parser()).replace(/\n\*\s*/g, '\n').replace(/^\n/, '').split('\n');
 	}
 	
 	// Check for required definitions
@@ -42,35 +42,46 @@ addOnloadHook(function(){jQuery(function($){
 	}
 	
 	rater.is_valid_page = function(){
-		if(!rater.page.exists) return false;
-		if($('#norate').length) return false
-		if('Masterwork DF2012 v0.31 40d 23a Utility'.split(' ').indexOf(rater.page.ns)+1) return true
-		return false
+		return rater.page_state()[1];
+	};
+	
+	rater.page_state = function(){
+		if (!rater.page.exists) return ['empty', false];
+		if ($('#norate').length) return ['norate', false];
+		if (!!rater.page.ns.match(/talk/i)) return ['talk', false];
+		if (rater.namespaces.enable.indexOf(rater.page.ns) >= 0) return ['enabled', true];
+		if (rater.namespaces.disable.indexOf(rater.page.ns) >= 0) return ['disabled', false];
+		return ['other', false];
 	};
 	
 	rater.error_invalid_page=function(){
-		if('Special File Image Unused'.indexOf(rater.page.ns)+1||
-			rater.page.ns.toLowerCase().indexOf('talk')+1){
-			rater.box.clear().append('<span class="error">I\'m afraid I can\'t let you do that,'+
-			' Urist.</span><p>This page isn\'t an article, and doesn\'t have some of the necessary'+
-			' properties to be rated. <a href="#rater-cancel">Close this window</a></p>')
-			rater.cancel_link.focus();
-		}
-		else if(!rater.page.exists){
-			rater.box.clear().append('<p class="error">This page doesn\'t exist!</p><a href="#rater-cancel">Close this window</a>');
-			rater.cancel_link.focus();
-		}
-		else if($('#norate').length){
-			rater.box.clear().append('<span class="error">Invalid page</span>')
-			.append("<p>This page has been specified as unratable. You can "+
-				"<a href='#rater-force'>view this page's rating anyway</a> or "+
-				"<a href='#rater-cancel'>close this window</a>.</p>");
-		}
-		else{
-			rater.box.clear().append('<span class="error">Invalid page</span>')
-			.append("<p>This page is in an invalid namespace. You can "+
-				"<a href='#rater-force'>view this page's rating anyway</a> or "+
-				"<a href='#rater-cancel'>close this window</a>.</p>")
+		rater.box.clear();
+		var error = $('<p class="error">').appendTo(rater.box),
+			options = {
+				force: $('<p><a href="#rater-force">View this page\'s rating anyway</a><p>').appendTo(rater.box),
+				close: $('<p><a href="#rater-cancel">Close this window</a><p>').appendTo(rater.box),
+			}
+		switch (rater.page_state()[0]) {
+			case 'empty':
+				error.text('This page doesn\'t exist!');
+				options.force.hide();
+				break;
+			case 'norate':
+				error.text('This page has been specified as unratable.');
+				break;
+			case 'disabled':
+				options.force.hide();
+			case 'other':   // FALLTHRU
+				error.text('This page is in an invalid namespace.');
+				break;
+			case 'talk':
+				error.text('This page is a discussion page and cannot be rated.');
+				options.force.hide();
+				break;
+			default:
+				error.text('This page cannot being rated.');
+				options.force.hide();
+				break;
 		}
 	};
 	
@@ -263,8 +274,10 @@ addOnloadHook(function(){jQuery(function($){
 	rater.show_link = $("<li>").append($('<span>').append(
 		$("<a href='#rater-invoke'>").text('Rate')
 	));
-	$("#left-navigation #p-namespaces ul:nth(0)").append('<li><span><a></a></span></li>')
-	$("#left-navigation #p-namespaces ul:nth(0)").append(rater.show_link)
+	if (rater.page_state()[0] != 'disabled') {
+		$("#left-navigation #p-namespaces ul:nth(0)").append('<li><span><a></a></span></li>');
+		$("#left-navigation #p-namespaces ul:nth(0)").append(rater.show_link);
+	}
 	
 	rater.show_link_topicon = $('<a>').attr({href:'#rater-invoke',title:"Change this page's rating"}).text('Change').appendTo('.topicon').css({'padding-left':6});
 	if(!rater.rating_exists) rater.show_link_topicon.hide()
