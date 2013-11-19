@@ -3,8 +3,8 @@
 $messages = array();
 
 $messages['en'] = array(
-	'rater-enable-ns' => '*',
-	'rater-disable-ns' => '*',
+	'rater-enable-ns' => '',
+	'rater-disable-ns' => '',
 );
 
 $messages['qqq'] = array(
