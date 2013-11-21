@@ -976,7 +976,18 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.current = rater.suggested_rating;
 		rater.submit_rating();
 	};
-	$('body').on('click','a[href=#rater-save]',rater.submit_suggested);	
+	$('body').on('click','a[href=#rater-save]',rater.submit_suggested);
+	
+	rater.update_text = function(text, quality){
+		// Updates {{quality}} in given wikitext
+		text = text.replace(/ *{{quality[^}]*?}} */gi, '');
+		text = '{{Quality|' + quality + '|~~~~~}}' + text;
+		text = text.replace(/^({{quality[^}]*?}})\n*/i, function(match, q){
+			return q + '\n';
+		});
+		return text;
+	}
+	
 	rater.submit_rating=function(){
 		// Set up UI
 		rater.overlay.fadeIn(400);
@@ -994,11 +1005,7 @@ addOnloadHook(function(){jQuery(function($){
 		var rating=rater.select.current.capitalize();
 		var old_rating=rater.tests.current_rating.capitalize();
 		if(!rater.loader.results.raw) return;
-		// Get token - most of these messages are left over
-		w('Getting token... ');
-		var token = mw.user.tokens.values.editToken;
-		rater.progress.update(1,3);
-		w('Ok ({0})\nReplacing quality template... '.format(token.slice(0,8)));
+		w('Replacing quality template... ');
 		var text=rater.loader.results.raw.replace(/ *{{quality[^}]*?}} */gi, '');
 		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
