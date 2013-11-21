@@ -913,7 +913,7 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	$('body').on('click','a[href=#rater-override]',rater.select.init);
 
-	rater.select.draw=function(){
+	rater.select.draw = function(){
 		$('.topicon > span').hide();
 		var c, selected, a, 
 			view=rater.select.view,
@@ -950,14 +950,14 @@ addOnloadHook(function(){jQuery(function($){
 		}, 250);
 	};
 	
-	rater.select.click=function(e){if(e.type=='click')PD(e);
+	rater.select.click = function(e){if(e.type=='click')PD(e);
 		rater.select.current=$(this).data('rating');
 		rater.select.draw();
 	};
 	
-	rater.select.reset=function(e){PD(e);rater.select.init();};
+	rater.select.reset = function(e){PD(e);rater.select.init();};
 	
-	rater.select.cancel=function(e){PD(e);
+	rater.select.cancel = function(e){PD(e);
 		rater.select.reset();
 		$('.topicon > span').hide().filter(':nth(0)').show();
 		rater.frame.change('main');
@@ -976,7 +976,7 @@ addOnloadHook(function(){jQuery(function($){
 		rater.select.current = rater.suggested_rating;
 		rater.submit_rating();
 	};
-	$('body').on('click','a[href=#rater-save]',rater.submit_suggested);
+	$('body').on('click','a[href=#rater-save]', rater.submit_suggested);
 	
 	rater.update_text = function(text, quality){
 		// Updates {{quality}} in given wikitext
@@ -988,7 +988,7 @@ addOnloadHook(function(){jQuery(function($){
 		return text;
 	}
 	
-	rater.submit_rating=function(){
+	rater.submit_rating = function(){
 		// Set up UI
 		rater.overlay.fadeIn(400);
 		rater.frame.change('submit-progress');
@@ -1000,23 +1000,23 @@ addOnloadHook(function(){jQuery(function($){
 		function w(s){stat.append(s);}
 		// Safety checks
 		var r=rater.select.current;
-		if(r in {}||!(r in rater.ratings)) return;
+		if (r in {}||!(r in rater.ratings)) return;
 		
-		var rating=rater.select.current.capitalize();
-		var old_rating=rater.tests.current_rating.capitalize();
-		if(!rater.loader.results.raw) return;
+		var rating = rater.select.current.capitalize(),
+			old_rating = rater.tests.current_rating.capitalize();
+		if (!rater.loader.results.raw) return;
 		w('Replacing quality template... ');
-		var text=rater.loader.results.raw.replace(/ *{{quality[^}]*?}} */gi, '');
-		text='{{Quality|'+rating+'|~~~~~}}\n'+text;
+		var text = rater.loader.results.raw.replace(/ *{{quality[^}]*?}} */gi, '');
+		text = '{{Quality|'+rating+'|~~~~~}}\n'+text;
 		w('Ok\nEditing page... ');
 		// Edit summary
 		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating)
 			:'Added quality rating "{0}" using the rating script'.format(rating)
-		if(rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
+		if (rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
 		
-		var save=function(){
+		var save = function(){
 			rater.overlay.fadeIn(400);
-			rater.update_page=function(){
+			rater.update_page = function(){
 				rater.progress.update(2,3);
 				w('Finished!\nUpdating...');
 				// Parse {{quality}} with the new rating
@@ -1027,7 +1027,7 @@ addOnloadHook(function(){jQuery(function($){
 					// Replace categories
 					$('.mw-normal-catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
 					var cats = d.parse.categories;
-					for(i=0;i<cats.length;i++){
+					for (i=0;i<cats.length;i++) {
 						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' '))
 								.appendTo($("<li>").appendTo('.mw-normal-catlinks ul'));
 					}
@@ -1046,7 +1046,7 @@ addOnloadHook(function(){jQuery(function($){
 					loader.reset()
 				});
 			};
-			rater.edit_page({minor:1, text:text, summary:summary}).on('done',rater.update_page);
+			rater.edit_page({minor:1, text:text, summary:summary}).on('done', rater.update_page);
 		};
 		// Confirm if ratings are identical
 		function cancel(){
@@ -1055,7 +1055,7 @@ addOnloadHook(function(){jQuery(function($){
 			rater.frame.change(('rating-desc' in rater.frame.list) ? 'rating-desc' : 'main');
 			rater.overlay.fadeOut(400);
 		};
-		if(rating == old_rating){
+		if (rating == old_rating) {
 			rater.confirm({
 				title:'Confirm submission', 
 				text:'The rating you selected is the same as the current rating. Continuing will only update the timestamp. Do you want to continue?',
@@ -1064,12 +1064,12 @@ addOnloadHook(function(){jQuery(function($){
 				cancel:cancel
 			});
 		}
-		else save()
+		else save();
 	};
 	
-	rater.edit_page=function(opts){
-		if(!('text' in opts)) return false;
-		opts=$.extend({
+	rater.edit_page = function(opts){
+		if (!('text' in opts)) return false;
+		opts = $.extend({
 			summary:'',
 			token:mw.user.tokens.values.editToken,
 			title:rater.page.name,
@@ -1079,28 +1079,29 @@ addOnloadHook(function(){jQuery(function($){
 		if (opts.auto_link)
 			opts.summary = opts.summary.replace(/rating\s+script/gi, '[[DF:Rater|rating script]]')
 				.replace(/quality rating/gi, '[[DF:Q|quality rating]]');
-		var event=$({}); // For attaching callbacks
+		var event = $({}); // For attaching callbacks
 		$.post(wgScriptPath+'/api.php', {action:'edit', title:opts.title, text:opts.text,
-		token:opts.token, minor:opts.minor, summary:opts.summary},function(d){
+		token:opts.token, minor:opts.minor, summary:opts.summary}, function(d){
 			event.trigger('done')
 		});
 		return event;
 	};
 	
-	//check for a provided hash...
-	if(window.location.hash.length){
-		rater.auto_link=$('<a>').attr('href',window.location.hash).appendTo('body');
-		setTimeout(function(){rater.auto_link.click()},100);//after this returns, anon for scope
+	// Check for a provided hash
+	if (window.location.hash.length) {
+		rater.auto_link = $('<a>').attr('href',window.location.hash).appendTo('body');
+		setTimeout(function(){rater.auto_link.click()}, 20); // Timeout triggers after rater is initialized
 	}
-	//Check querystring for message
+	// Parse querystring
 	rater.qs_raw=window.location.search.slice(1);rater.qs_list=rater.qs_raw.split('&');rater.qs={};
-	for(var i=0;i<rater.qs_list.length;i++){
-		var v=rater.qs_list[i].split('=');
-		rater.qs[v[0]]=v[1]
+	for (var i=0;i<rater.qs_list.length;i++) {
+		var v = rater.qs_list[i].split('=');
+		rater.qs[v[0]] = v[1]
 	}
 	
-	//$(document).trigger('rater.ready');
-	//export
-	rater.loader=loader;window.rater=rater;return rater;
+	// Export
+	rater.loader = loader;
+	window.rater = rater;
+	return rater;
 });});
 // </nowiki>
