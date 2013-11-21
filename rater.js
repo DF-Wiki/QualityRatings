@@ -1,9 +1,7 @@
 /* <nowiki> // Prevents tilde expansion
-Rating Script (DF Wiki) (GitHub version)
-Changes from old version: jQuery, extra automatic tests
-*/
-
-//Like python: 'a{0}b'.format('c') == 'acb'
+ * DF Wiki rating script
+ */
+//Like Python: 'a{0}b'.format('c') == 'acb'
 String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.replace(RegExp('\\{'+i+'\\}','g'), arguments[i])};return s};
 String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
 addOnloadHook(function(){jQuery(function($){
