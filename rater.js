@@ -11,6 +11,10 @@ addOnloadHook(function(){jQuery(function($){
 			enable: [],
 			disable: [],
 		},
+		debug: {
+			force_state: false,
+			enabled: true,
+		},
 	};
 	
 	for (i in rater.namespaces) { if (i in {}) continue;
@@ -18,12 +22,10 @@ addOnloadHook(function(){jQuery(function($){
 	}
 	
 	// Check for required definitions
-	if(!mw||!('wgScript' in window)) throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
+	if (!('mw' in window) || !('wgScript' in window))
+		throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
 	
-	rater.event=$({}); //for event bindings
-	//Import a custom script that might display a message
-	//(importScript doesn't seem to work here)
-	$.getScript(wgScript+'?title=User:Lethosor/raterwarn.js&action=raw');
+	rater.event = $({}); //for event bindings
 	
 	function PD(e){ //preventDefault
 		if(e && e.preventDefault && e.preventDefault.call)
@@ -44,6 +46,7 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	
 	rater.page_state = function(){
+		if (rater.debug.force_state) return ['debug-' + (rater.debug.enabled ? 'enabled' : 'disabled'), rater.debug.enabled];
 		if (!rater.page.exists) return ['empty', false];
 		if ($('#norate').length) return ['norate', false];
 		if (!!rater.page.ns.match(/talk/i)) return ['talk', false];
@@ -1006,8 +1009,8 @@ addOnloadHook(function(){jQuery(function($){
 			old_rating = rater.tests.current_rating.capitalize();
 		if (!rater.loader.results.raw) return;
 		w('Replacing quality template... ');
-		var text = rater.loader.results.raw.replace(/ *{{quality[^}]*?}} */gi, '');
-		text = '{{Quality|'+rating+'|~~~~~}}\n'+text;
+		var text = rater.loader.results.raw;
+		text = rater.update_text(text, rating);
 		w('Ok\nEditing page... ');
 		// Edit summary
 		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating)
