@@ -6,7 +6,7 @@ String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.re
 String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
 addOnloadHook(function(){jQuery(function($){
 	var rater = {
-		version: '1.0.3',
+		version: '1.0.4',
 		namespaces: {
 			enable: [],
 			disable: [],
