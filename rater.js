@@ -14,6 +14,10 @@ addOnloadHook(function(){jQuery(function($){
 		debug: {
 			force_state: false,
 			enabled: true,
+			setEnabled: function(enabled) {
+				rater.debug.force_state = true;
+				rater.debug.enabled = enabled;
+			}
 		},
 	};
 	
