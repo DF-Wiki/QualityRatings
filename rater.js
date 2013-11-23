@@ -217,7 +217,6 @@ addOnloadHook(function(){jQuery(function($){
 			t.box.stop(1,1).fadeOut(300);
 			return t;
 		}; 
-		//if(t!=window&&t!=SCOPE) for(i in t) this[i]=t[i];
 		return t;
 	};
 	
@@ -325,12 +324,12 @@ addOnloadHook(function(){jQuery(function($){
 	$('body').on('click','a[href=#rater-about]',rater.about);
 	
 	/*
-	nonstd = Non-standard
-	Extra/advanced options - deleting template, mark as "Unrated", etc.
-	*/
-	rater.nonstd={};
+	 * nonstd = Non-standard
+	 * Extra/advanced options - deleting template, mark as "Unrated", etc.
+	 */
+	rater.nonstd = {};
 	
-	rater.nonstd.metadata={
+	rater.nonstd.metadata = {
 		'rm-quality':{
 			desc: 'Remove the quality rating',
 			process: function(data){
@@ -350,10 +349,10 @@ addOnloadHook(function(){jQuery(function($){
 	
 	// Set up UI
 	rater.frame.change('nonstd')
-	rater.nonstd.view=rater.frame.list.nonstd
+	rater.nonstd.view = rater.frame.list.nonstd
 	rater.frame.change('main')
 	
-	rater.nonstd.init=function(e){PD(e);
+	rater.nonstd.init = function(e){PD(e);
 		rater.frame.change('nonstd');
 		var v=rater.nonstd.view;
 		v.html('').append('<h2>Advanced options</h2><p id="p">No options available for this page.</p>');
@@ -362,29 +361,29 @@ addOnloadHook(function(){jQuery(function($){
 		for(var i in md){if(i in {}) continue;
 			if(!rater.is_valid_page() && md[i].needs_valid) continue;
 			v.find('p#p').hide()
-			var a=$('<a>').text(md[i].desc).attr('href','#rater-nonstd-select').data('opt',i)
+			var a=$('<a>').text(md[i].desc).attr('href', '#rater-nonstd-select').data('opt',i)
 			ul.append($("<li>").append(a));
 		}
 	};
-	rater.nonstd.select=function(e){PD(e);
-		var opt=rater.nonstd.opt=$(this).data('opt');
+	rater.nonstd.select = function(e){PD(e);
+		var opt = rater.nonstd.opt=$(this).data('opt');
 		rater.confirm({title:'Confirm', text:'Are you sure you want to perform this action?',
 			ok_text:'Continue', ok:rater.nonstd.process})
 	};
 	rater.nonstd.process = function(){
-		var opt=rater.nonstd.opt,md=rater.nonstd.metadata;
-		var new_text = md[opt].process(rater.loader.results.raw);
+		var opt = rater.nonstd.opt,md=rater.nonstd.metadata,
+			new_text = md[opt].process(rater.loader.results.raw);
 		rater.confirm({title:'Saving...', text:'Please wait', ok_text:'', cancel_text:''})
 		rater.edit_page({text:new_text, minor:1, summary:md[opt].summary.format(rater.tests.current_rating) + ' using the rating script'}).on('done', function(){
 			window.location.reload();
 		});
 	};
 	
-	rater.nonstd.cancel=function(e){PD(e);
+	rater.nonstd.cancel = function(e){PD(e);
 		rater.frame.change('main');
 	};
-	rater.nonstd.init_link=$('<a>').text('Advanced options').attr({href:'#rater-nonstd-init'});
-	rater.nonstd.cancel_link=$('<a>').text('Back').attr({href:'#rater-nonstd-cancel'}).css({color:'red', position:'absolute', right:0, top:'1em'});
+	rater.nonstd.init_link = $('<a>').text('Advanced options').attr({href:'#rater-nonstd-init'});
+	rater.nonstd.cancel_link = $('<a>').text('Back').attr({href:'#rater-nonstd-cancel'}).css({color:'red', position:'absolute', right:0, top:'1em'});
 	$('body')
 		.on('click','a[href=#rater-nonstd-init]', rater.nonstd.init)
 		.on('click','a[href=#rater-nonstd-cancel]', rater.nonstd.cancel)
@@ -392,9 +391,9 @@ addOnloadHook(function(){jQuery(function($){
 	rater.event.bind('results-displayed', function(){rater.nonstd.init_link.appendTo(rater.box)})
 	
 	/*
-	Decriptions of URLs, tests, etc.
-	*/
-	rater.metadata={};
+	 * Decriptions of URLs, tests, etc.
+	 */
+	rater.metadata = {};
 	rater.metadata.urls = {
 		// API queries (not actual URLs)
 		// Objects are converted to a querystring by jQuery
@@ -464,10 +463,10 @@ addOnloadHook(function(){jQuery(function($){
 	
 	*/
 	rater.metadata.tests = {
-		redlinks:{
-			name:'Redlinks',
-			init:function(data){
-				all_links = data.render.text['*'].match(/<a .*<\/a>/g);
+		redlinks: {
+			name: 'Redlinks',
+			init: function(data){
+				var all_links = data.render.text['*'].match(/<a .*<\/a>/g);
 				if(!all_links) return 0; //no links
 				var total_redlinks=0;
 				$.each(all_links, function(i,link){
@@ -475,186 +474,190 @@ addOnloadHook(function(){jQuery(function($){
 				});
 				return total_redlinks
 			},
-			score:function(o){
+			score: function(o) {
 				return o*-5 + 10;
 			}
 		},
-		links:{
-			name:'Outbound links',
-			init:function(data){
+		links: {
+			name: 'Outbound links',
+			init: function(data) {
 				return data.render.links.length;
 			},
-			score:function(o){
+			score: function(o) {
 				if(o==0) return -20; // no links
 				return Math.min(o, 20); // 1 point per link, capped at 20
 			}
 		},
-		extlinks:{
-			name:'External links',
-			init:function(data){
+		extlinks: {
+			name: 'External links',
+			init: function(data){
 				return data.render.externallinks.length;
 			},
-			score:function(o){
+			score: function(o) {
 				return o*0.5;
 			}
 		},
-		linkshere:{
-			name:'Incoming links',
-			init:function(data){
+		linkshere: {
+			name: 'Incoming links',
+			init: function(data){
 				var a={length:data.backlinks.length, list:[]};
 				$.each(data.backlinks,function(i,p){
 					a.list.push(p.title);
 				});
 				return a;
 			},
-			str: function(o){return o.length},
-			int: function(o){return Number(o.length)},
-			info: function(o,view){
+			str: function(o) {
+				return o.length
+			},
+			int: function(o) {
+				return Number(o.length)
+			},
+			info: function(o,view) {
 				$('<h2>').text('Incoming links').appendTo(view);
-				var ul=$("<ul>").appendTo(view);
-				for(i in o.list){if(i in []) continue;
+				var ul = $("<ul>").appendTo(view);
+				for (i in o.list) { if(i in []) continue;
 					ul.append('<li><a href="{1}/{0}" target="_blank">{0}</a></li>'.format(o.list[i], wgScript));
 				}
 				view.append('<h4>Total: {0}</h4>'.format(o.length))
 			},
-			score:function(o){
+			score: function(o) {
 				var x=o.length;
-				if(x==0) return -35; //orphaned
+				if (x==0) return -35; //orphaned
 				return x*2.5; //links here are good
 			}
 		},
-		editors:{
-			name:'Editor count',
-			init:function(data){
+		editors: {
+			name: 'Editor count',
+			init: function(data) {
 				var list = data.history;
-				var editors={total_edits: list.length, total:0};
-				for(i=0; i<list.length; i++){
+				var editors = {total_edits: list.length, total:0};
+				for (i=0; i<list.length; i++) {
 					ed = list[i].user;
-					if(!(ed in editors)){
-						editors[ed]=0;
+					if (!(ed in editors)) {
+						editors[ed] = 0;
 						editors.total++;
 					}
-					editors[ed]++ 
+					editors[ed]++; 
 				}
 				return editors;
 			},
-			str:function(o){return o.total}, int:function(o){return o.total;},
-			info:function(o,view){
-				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
-				for(i in o){
-					if(i in {}||!i.indexOf('total')) continue;
+			str: function(o){return o.total}, int:function(o){return o.total;},
+			info: function(o,view) {
+				var tbl = $("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
+				for (i in o) {
+					if (i in {}||!i.indexOf('total')) continue;
 					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}" target="_blank">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],wgScript))
 				}
 				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'.format(o.total,o.total_edits))
 			},
-			score:function(o){
-				var n=Math.max(1,Math.floor(o.total))
-				if(n==1) return 0;
-				if(n==2) return 6;
-				if(n==3) return 14;
+			score: function(o) {
+				var n = Math.max(1,Math.floor(o.total))
+				if (n == 1) return 0;
+				if (n == 2) return 6;
+				if (n == 3) return 14;
 				return 5.5*n;
 			}
 		},
-		length:{
-			name:'Article length',
-			init:function(data){
-				var a={
-					'full':data.raw.length,
-					'nospace':data.raw.replace(/\s/g,'').length,
-					'notemplate':data.raw.replace(/{{[^}]*?}}/g,'').length,
-					'plain':data.raw.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length,
-					'html':data.render.text['*'].length,
-					'text':$(data.render.text['*']).text().length
+		length: {
+			name: 'Article length',
+			init: function(data){
+				var a = {
+					'full': data.raw.length,
+					'nospace': data.raw.replace(/\s/g,'').length,
+					'notemplate': data.raw.replace(/{{[^}]*?}}/g,'').length,
+					'plain': data.raw.replace(/\s/g,'').replace(/{{[^}]*?}}/g,'').length,
+					'html': data.render.text['*'].length,
+					'text': $(data.render.text['*']).text().length,
 				};
-				a.average=Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace + .3*a.text);
+				a.average = Math.round(.1*a.full + .2*a.notemplate + .2*a.plain + .1*a.html + .1*a.nospace + .3*a.text);
 				return a;
 			},
-			int:function(o){return o.average},
-			str:function(o){return o.average + ' (weighted)'},
-			info:function(o,view){
-				var tbl=$("<table>").css({width:'100%'}).append('<tr><th colspan="2">Article Length</th></tr>').addClass('wikitable').appendTo(view);
-				var descs={html:'Generated HTML', text:'Displayed text', full:'Wikitext', nospace:'Wikitext without spaces', notemplate:'Wikitext without templates', plain:'Wikitext without spaces and templates'}
-				for(i in o){if(!(i in descs))continue;
+			int: function(o){return o.average},
+			str: function(o){return o.average + ' (weighted)'},
+			info: function(o,view) {
+				var tbl = $("<table>").css({width:'100%'}).append('<tr><th colspan="2">Article Length</th></tr>').addClass('wikitable').appendTo(view);
+				var descs = {html:'Generated HTML', text:'Displayed text', full:'Wikitext', nospace:'Wikitext without spaces', notemplate:'Wikitext without templates', plain:'Wikitext without spaces and templates'}
+				for (i in o) { if (!(i in descs)) continue;
 					tbl.append('<tr><td>{0}</td><td>{1}</td></tr>'.format(descs[i],o[i]));
 				}
 				tbl.append('<tr style="font-weight:bold;"><td>Weighted</td><td>{0}</td></tr>'.format(o.average))
 			}
 		},
-		verify:{
-			name:'{{Verify}} tags',
-			init:function(data){
+		verify: {
+			name: '{{Verify}} tags',
+			init: function(data) {
 				var m=data.raw.match(/{{verify/gi);return +(m&&m.length);
 			},
-			score:function(o){if(o<1) return 0; if(o==1) return -10; return o*-20}
+			score: function(o){if(o<1) return 0; if(o==1) return -10; return o*-20}
 		},
-		categories:{
-			name:'Categories',
-			init:function(data){
-				var cats=data.render.categories, o={total:cats.length,list:[]};
+		categories: {
+			name: 'Categories',
+			init: function(data) {
+				var cats = data.render.categories, o={total:cats.length,list:[]};
 				$.each(cats,function(i,c){o.list.push(c['*'].replace(/_/g,' '));});
 				return o;
 			},
 			int: function(o){return o.total},
-			info: function(o, view){
+			info: function(o, view) {
 				$('<h2>').text('Categories').appendTo(view);
-				var ul=$("<ul>").appendTo(view);
+				var ul = $("<ul>").appendTo(view);
 				for(i in o.list){if(i in []) continue;
 					ul.append('<li><a href="{1}/Category:{0}" target="_blank">{0}</a></li>'.format(o.list[i], wgScript));
 				}
 				view.append('<h4>Total: {0}</h4>'.format(o.total))
 			}
 		},
-		current_rating:{
-			name:'Current rating',
-			init:function(data){
-				m=data.raw.match(/{{quality[^}]*?}}/i);
+		current_rating: {
+			name: 'Current rating',
+			init: function(data) {
+				m = data.raw.match(/{{quality[^}]*?}}/i);
 				return (m&&m.length&&m[0].slice(2,-2).split('|')[1])||'';
 			},
-			score:function(o){return [0,-15,0,10,20,40][rater.rating_arr.indexOf(o)+1]}
+			score: function(o){return [0,-15,0,10,20,40][rater.rating_arr.indexOf(o)+1]}
 		}
 	};
 	
 	rater.metadata.questions = {
-		enough_info:{
-			q:'Does the page contain a decent amount of information?',
-			type:'bool',
-			score:function(v){return v?40:-50;}
+		enough_info: {
+			q: 'Does the page contain a decent amount of information?',
+			type: 'bool',
+			score: function(v){return v?40:-50;}
 		},
-		inaccurate:{
+		inaccurate: {
 			q:'Does the page contain any inaccurate information?',
-			type:'bool',
-			score:function(v){return v?-50:20;}
+			type: 'bool',
+			score: function(v){return v?-50:20;}
 		},
-		understandable:{
-			q:'Is the page relatively easy to understand?',
-			type:'bool',
-			score:function(v){return v?40:-35}
+		understandable: {
+			q: 'Is the page relatively easy to understand?',
+			type: 'bool',
+			score: function(v){return v?40:-35}
 		},
-		cats_ok:{
-			q:'Are the categories appropriate?',
-			type:'bool',
-			score:function(v){return v?25:-15}
+		cats_ok: {
+			q: 'Are the categories appropriate?',
+			type: 'bool',
+			score: function(v){return v?25:-15}
 		},
-		appearance:{
-			q:'Page appearance:',
-			type:'choice',
-			choices:['Poor','Average','Good','Very good','Extremely good'],
-			default_choice:1,
+		appearance: {
+			q: 'Page appearance:',
+			type: 'choice',
+			choices: ['Poor','Average','Good','Very good','Extremely good'],
+			default_choice: 1,
 			score:function(v){return 35*v-50}
 		}
 	};
-	rater.questions={ans:{}};
+	rater.questions = {ans: {}};
 	
-	rater.ratings={
-		tattered:{id:1,color:{b:'#333',bg:'#ccc',c:'#333'},s:'x'},
-		fine:{id:2,color:{b:'#db8',bg:'#ffe0cc',c:'#ca7a02'},s:'+'},
-		superior:{id:3,color:{b:'#b8f',bg:'#e4ccff',c:'#80c'},s:'*'},
-		exceptional:{id:4,color:{b:'#9df',bg:'#cce4ff',c:'#08c'},s:'\u2261'},
-		masterwork:{id:5,color:{b:'#bd8',bg:'#e2fdce',c:'#72a329'},s:'\u263c'}
+	rater.ratings = {
+		tattered: {id:1,color:{b:'#333',bg:'#ccc',c:'#333'},s:'x'},
+		fine: {id:2,color:{b:'#db8',bg:'#ffe0cc',c:'#ca7a02'},s:'+'},
+		superior: {id:3,color:{b:'#b8f',bg:'#e4ccff',c:'#80c'},s:'*'},
+		exceptional: {id:4,color:{b:'#9df',bg:'#cce4ff',c:'#08c'},s:'\u2261'},
+		masterwork: {id:5,color:{b:'#bd8',bg:'#e2fdce',c:'#72a329'},s:'\u263c'}
 	};
-	rater.rating_arr=['tattered','fine','superior','exceptional','masterwork'];
+	rater.rating_arr = ['tattered','fine','superior','exceptional','masterwork'];
 	rater.rating_scores = [0, 50, 160, 350];
-	rater.rating_score = function(score){
+	rater.rating_score = function(score) {
 		for (var i=0; i<4; i++) {
 				if (score < rater.rating_scores[i]) return rater.rating_arr[i]; 
 		}
@@ -662,32 +665,32 @@ addOnloadHook(function(){jQuery(function($){
 	}
 	
 	/* Stores the results of tests */
-	rater.tests={};
+	rater.tests = {};
 	
 	/*
 	Loader
 	Loads multiple URLs, with optional callbacks 
 	*/
-	var loader={};
-	loader.list={}; //list of all tests
-	loader.results={}; //shortcut: data[x]==lists[x].data
+	var loader = {};
+	loader.list = {}; //list of all tests
+	loader.results = {}; //shortcut: data[x]==lists[x].data
 	
-	loader.event=$({});
+	loader.event = $({});
 	loader.num_waiting = 0;
 	loader.total_tests = 0;
-	loader.key=Math.floor(Math.random()*1e8); //prevent caching
+	loader.key = Math.floor(Math.random()*1e8); //prevent caching
 	
-	loader.add = function(name, url, urldata){ 
+	loader.add = function(name, url, urldata) { 
 		loader.list[name] = {url:url, urldata:urldata};
 		urldata = $.extend(urldata, {rater:loader.key});
-		$.get(url, urldata, function(data){
+		$.get(url, urldata, function(data) {
 			loader.ready(name, data);
 		});
 		loader.num_waiting++;
 		loader.total_tests++;
 	};
-	loader.ready = function(name,data){
-		if(data.query)
+	loader.ready = function(name,data) {
+		if (data.query)
 			data = data.query;
 		// Pass data through relevant filter, if it exists
 		if (rater.metadata.data_filters[name])
@@ -695,44 +698,44 @@ addOnloadHook(function(){jQuery(function($){
 		loader.list[name].result = loader.results[name] = data;
 		loader.num_waiting--;
 		loader.event.trigger('ready',{left:loader.num_waiting,total:loader.total_tests,name:name,data:data}); 
-		if(loader.num_waiting <= 0){
+		if (loader.num_waiting <= 0) {
 			setTimeout(loader.all_complete, 1); //async
 		}
 	};
 	
-	loader.all_complete = function(){
+	loader.all_complete = function() {
 		loader.event.trigger('done');
 		// Reset
-		loader.total_tests=0;
+		loader.total_tests = 0;
 		loader.event.off(); // Unbind all events for another (possible) run
 	};
-	loader.add_callback=function(func){
+	loader.add_callback = function(func) {
 		// For compatibility -- triggered on `done` event
-		loader.event.bind('done',func);
+		loader.event.bind('done', func);
 	};
 	
-	loader.reset = function(){
+	loader.reset = function() {
 		// Avoid caching - it messes with the old rating vs. new rating code
-		loader.key+=Math.floor(Math.random()*1e2)+2;
+		loader.key += Math.floor(Math.random()*1e2)+2;
 	};
 	
-	rater.help={view:$('<div>').css({height:'100%'})};
-	rater.help.init=function(){
+	rater.help = {view:$('<div>').css({height:'100%'})};
+	rater.help.init = function() {
 		$.get(wgScript+'/DF:Quality?action=render',function(d){
-			d=$(d);
-			rater.help.data=[];
-			for(var i=0;i<=5;i++){
-				rater.help.data[i]=d.filter('h3:nth({0})'.format(i)).nextUntil('h3');
+			d = $(d);
+			rater.help.data = [];
+			for (var i = 0; i <= 5; i++) {
+				rater.help.data[i] = d.filter('h3:nth({0})'.format(i)).nextUntil('h3');
 				rater.help.data[i].splice(0,0,d.filter('h3:nth({0})'.format(i))[0]); // prepend header
 			};
 			rater.help.update();
 		});	
 	};
-	rater.help.update=function(n){
-		if(!rater.help.data)return;
-		if(!(n+1)){
-			try{
-				n=rater.ratings[rater.select.current].id;
+	rater.help.update = function(n) {
+		if (!rater.help.data) return;
+		if (!(n+1)) {
+			try {
+				n = rater.ratings[rater.select.current].id;
 			} catch(e){return}
 		}
 		rater.help.view.text('').append(rater.help.data[n]);
@@ -740,7 +743,7 @@ addOnloadHook(function(){jQuery(function($){
 		//rater.box.scrollTop(rater.box.height());
 	};
 	
-	rater.progress={};
+	rater.progress = {};
 	rater.progress.view=$("<div>").css({width:'100%',padding:0,margin:0});
 	
 	rater.progress.bar=$('<div>').css({width:'100%','background-color':'#fff',border:'1px solid #ac7',padding:3,'border-radius':2,overflow:'hidden'}).appendTo(rater.progress.view);
