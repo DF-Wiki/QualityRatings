@@ -73,6 +73,7 @@ addOnloadHook(function(){jQuery(function($){
 				break;
 			case 'norate':
 				error.text('This page has been specified as unratable.');
+				options.force.hide();
 				break;
 			case 'disabled':
 				options.force.hide();
