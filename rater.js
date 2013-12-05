@@ -251,8 +251,13 @@ addOnloadHook(function(){jQuery(function($){
 	};
 	rater.box.clear()
 	
+	$('body').on('click', '[href=#rater-box-top]', function(e){PD(e);
+		rater.frame.current_frame().parent().animate({scrollTop:0}, 400);
+	});
+	
 	rater.cancel = function(e){
-		PD(e);rater.show_link.removeClass('selected');
+		PD(e);
+		rater.show_link.removeClass('selected');
 		rater.overlay.stop(1,1).fadeOut(300);
 		rater.win.stop(1,1).fadeOut(300);
 		if(rater.is_valid_page() || rater.rating_exists) rater.show_link_topicon.show(500);
@@ -902,10 +907,14 @@ addOnloadHook(function(){jQuery(function($){
 		
 		rater.box.append($("<p>").html("Score: <span class='rater-score'>{0}</span>" .format(rater.score)));
 		rater.box.append($("<p>").html("Suggested rating: <span class='rater-suggest'></span>"));
-		var links = $('<p>').appendTo(rater.box);
+		var links = $('<p>').attr({id:'rater-rating-links'}).appendTo(rater.box);
 		$("<a>").attr({href:'#rater-save'}).html('Save')
 				.css({color:'#090'}).appendTo(links);
 		$("<a>").attr({href:'#rater-override'}).html('Override')
+				.appendTo(links.append(' | '));
+		$("<a>").attr({href:'#rater-cancel'}).html('Cancel')
+				.css({color:'#f00'}).appendTo(links.append(' | '));
+		$("<a>").attr({href:'#rater-box-top'}).html('Top')
 				.appendTo(links.append(' | '));
 		if (!rater.is_valid_page()) links.hide(); 
 		
