@@ -1033,6 +1033,7 @@ addOnloadHook(function(){jQuery(function($){
 		var summary = (old_rating!='')?'Changed quality rating from "{0}" to "{1}" using the rating script'.format(old_rating,rating)
 			:'Added quality rating "{0}" using the rating script'.format(rating)
 		if (rating==old_rating) summary='Updated quality rating timestamp ("{0}") using the rating script'.format(rating)
+		rater.progress.update(1,3);
 		
 		var save = function(){
 			rater.overlay.fadeIn(400);
