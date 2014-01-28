@@ -42,7 +42,7 @@ $QRColorFormats = array(
 	),
 	'hex' => array(
 		'encode' => function($arr) {
-			return '#' . dechex($arr[0]) . dechex($arr[1]) . dechex($arr[2]);
+			return '#' . sprintf("%02x%02x%02x", $arr[0], $arr[1], $arr[2]);
 		},
 		'decode' => function($str) {
 			$matches = array();
