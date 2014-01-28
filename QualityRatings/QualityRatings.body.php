@@ -1,12 +1,21 @@
 <?php
 
+$QRFunctions = array(
+	'colorconvert',
+	'strlen',
+	'substr',
+);
+
 class QualityRatingHooks {
 	public static function includeModules ($outPage) {
 		$outPage->addModules('ext.QualityRatings');
 		return true;
 	}
 	public static function init (&$parser) {
-		$parser->setFunctionHook('colorconvert', 'QualityRatingFuncs::colorconvert');
+		global $QRFunctions;
+		foreach ($QRFunctions as $f) {
+			$parser->setFunctionHook($f, "QualityRatingFuncs::$f");
+		}
 		return true;
 	}
 }
@@ -25,6 +34,12 @@ class QualityRatingFuncs {
 			return self::error("Invalid $from color: '$color'");
 		}
 		return $QRColorFormats[$to]['encode']($decoded);
+	}
+	public static function strlen ($parser, $str='') {
+		return mb_strlen($str);
+	}
+	public static function substr ($parser, $str='', $start=0, $length=null) {
+		return @mb_substr($str, $start, $length);
 	}
 }
 
