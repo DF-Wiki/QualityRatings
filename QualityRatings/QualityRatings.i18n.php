@@ -9,5 +9,11 @@ $messages['en'] = array(
 
 $messages['qqq'] = array(
 	'rater-enable-ns' => 'List of namespaces where rating script is enabled',
-	'rater-disable-ns' => 'List of namespaces where rating script is disabled'
+	'rater-disable-ns' => 'List of namespaces where rating script is disabled',
+);
+
+$magicWords = array();
+
+$magicWords['en'] = array(
+    'colorconvert' => array(0, 'colorconvert'),
 );
