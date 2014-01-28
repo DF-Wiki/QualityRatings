@@ -60,5 +60,17 @@ $QRColorFormats = array(
 			);
 		}
 	),
+	'rgb1' => array(
+		'encode' => function($arr) { return $arr[0]; },
+		'decode' => function($str) { return false; }
+	),
+	'rgb2' => array(
+		'encode' => function($arr) { return $arr[1]; },
+		'decode' => function($str) { return false; }
+	),
+	'rgb3' => array(
+		'encode' => function($arr) { return $arr[2]; },
+		'decode' => function($str) { return false; }
+	),
 );
 
