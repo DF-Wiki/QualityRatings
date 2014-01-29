@@ -5,6 +5,8 @@ $QRFunctions = array(
 	'strlen',
 	'substr',
 	'strsplit',
+	'strpos',
+	'strrpos',
 );
 
 class QualityRatingHooks {
@@ -54,6 +56,12 @@ class QualityRatingFuncs {
 			}
 			return $matches[0];
 		}, $return);
+	}
+	public static function strpos ($parser, $str, $sub, $start=0) {
+		return mb_strpos($str, $sub, $start);
+	}
+	public static function strrpos ($parser, $str, $sub, $start=0) {
+		return mb_strrpos($str, $sub, $start);
 	}
 }
 
