@@ -13,6 +13,7 @@ $QRFunctions = array(
 	'stristr',
 	'strcount',
 	'stricount',
+	'strc',
 	'randint',
 );
 
@@ -87,6 +88,11 @@ class QualityRatingFuncs {
 	}
 	public static function stricount ($parser, $str, $sub) {
 		return mb_substr_count(mb_strtolower($str), mb_strtolower($sub));
+	}
+	public static function strc ($parser, $str) {
+		// Convert escape characters into the characters they represent
+		$str = preg_replace('/\\[0ab]/', '', $str);
+		return stripcslashes($str);
 	}
 	public static function randint ($parser, $a, $b=1) {
 		$a = (int)$a; $b = (int)$b;
