@@ -13,6 +13,7 @@ $QRFunctions = array(
 	'stristr',
 	'strcount',
 	'stricount',
+	'randint',
 );
 
 class QualityRatingHooks {
@@ -51,7 +52,7 @@ class QualityRatingFuncs {
 		return @mb_substr($str, $start, $length);
 	}
 	public static function strsplit ($parser, $str, $delim, $return='$1', $limit=10000) {
-		$parts = explode($delim, $str, $limit);
+		$parts = explode($delim, $str, (int)$limit);
 		$parts[-1] = $str;
 		$return = preg_replace('/^\d+$/', "\$$0", $return);
 		return preg_replace_callback('/\$\{?(\d+)\}?/', function($matches) use ($parts){
@@ -64,28 +65,33 @@ class QualityRatingFuncs {
 		}, $return);
 	}
 	public static function strpos ($parser, $str, $sub, $start=0) {
-		return mb_strpos($str, $sub, $start);
+		return mb_strpos($str, $sub, (int)$start);
 	}
 	public static function strrpos ($parser, $str, $sub, $start=0) {
-		return mb_strrpos($str, $sub, $start);
+		return mb_strrpos($str, $sub, (int)$start);
 	}
 	public static function stripos ($parser, $str, $sub, $start=0) {
-		return mb_stripos($str, $sub, $start);
+		return mb_stripos($str, $sub, (int)$start);
 	}
 	public static function strripos ($parser, $str, $sub, $start=0) {
-		return mb_strripos($str, $sub, $start);
+		return mb_strripos($str, $sub, (int)$start);
 	}
 	public static function strstr ($parser, $str, $sub, $before=0) {
-		return mb_strstr($str, $sub, $before) || '';
+		return mb_strstr($str, $sub, (bool)$before) || '';
 	}
 	public static function stristr ($parser, $str, $sub, $before=0) {
-		return mb_stristr($str, $sub, $before) || '';
+		return mb_stristr($str, $sub, (bool)$before) || '';
 	}
 	public static function strcount ($parser, $str, $sub) {
 		return mb_substr_count($str, $sub);
 	}
 	public static function stricount ($parser, $str, $sub) {
 		return mb_substr_count(mb_strtolower($str), mb_strtolower($sub));
+	}
+	public static function randint ($parser, $a, $b=1) {
+		$a = (int)$a; $b = (int)$b;
+		if ($a < $b) return mt_rand($a, $b);
+		else return mt_rand($b, $a);
 	}
 }
 
