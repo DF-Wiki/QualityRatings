@@ -7,6 +7,12 @@ $QRFunctions = array(
 	'strsplit',
 	'strpos',
 	'strrpos',
+	'stripos',
+	'strripos',
+	'strstr',
+	'stristr',
+	'strcount',
+	'stricount',
 );
 
 class QualityRatingHooks {
@@ -62,6 +68,24 @@ class QualityRatingFuncs {
 	}
 	public static function strrpos ($parser, $str, $sub, $start=0) {
 		return mb_strrpos($str, $sub, $start);
+	}
+	public static function stripos ($parser, $str, $sub, $start=0) {
+		return mb_stripos($str, $sub, $start);
+	}
+	public static function strripos ($parser, $str, $sub, $start=0) {
+		return mb_strripos($str, $sub, $start);
+	}
+	public static function strstr ($parser, $str, $sub, $before=0) {
+		return mb_strstr($str, $sub, $before) || '';
+	}
+	public static function stristr ($parser, $str, $sub, $before=0) {
+		return mb_stristr($str, $sub, $before) || '';
+	}
+	public static function strcount ($parser, $str, $sub) {
+		return mb_substr_count($str, $sub);
+	}
+	public static function stricount ($parser, $str, $sub) {
+		return mb_substr_count(mb_strtolower($str), mb_strtolower($sub));
 	}
 }
 
