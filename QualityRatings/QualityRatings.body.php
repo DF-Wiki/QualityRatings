@@ -4,6 +4,7 @@ $QRFunctions = array(
 	'colorconvert',
 	'strlen',
 	'substr',
+	'strsplit',
 );
 
 class QualityRatingHooks {
@@ -40,6 +41,19 @@ class QualityRatingFuncs {
 	}
 	public static function substr ($parser, $str='', $start=0, $length=null) {
 		return @mb_substr($str, $start, $length);
+	}
+	public static function strsplit ($parser, $str, $delim, $return='$1', $limit=10000) {
+		$parts = explode($delim, $str, $limit);
+		$parts[-1] = $str;
+		$return = preg_replace('/^\d+$/', "\$$0", $return);
+		return preg_replace_callback('/\$\{?(\d+)\}?/', function($matches) use ($parts){
+			$key = (int)$matches[1];
+			if ($key <= count($parts) && $key >= 0) {
+				// 1 = first element
+				return $parts[$key-1];
+			}
+			return $matches[0];
+		}, $return);
 	}
 }
 
