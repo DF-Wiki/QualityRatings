@@ -15,7 +15,12 @@ $QRFunctions = array(
 	'stricount',
 	'strc',
 	'randint',
+	'param',
 );
+$QRFunctionFlags = array(
+	'param' => SFH_OBJECT_ARGS,
+);
+
 
 class QualityRatingHooks {
 	public static function includeModules ($outPage) {
@@ -23,9 +28,11 @@ class QualityRatingHooks {
 		return true;
 	}
 	public static function init (&$parser) {
-		global $QRFunctions;
+		global $QRFunctions, $QRFunctionFlags;
 		foreach ($QRFunctions as $f) {
-			$parser->setFunctionHook($f, "QualityRatingFuncs::$f");
+			$parser->setFunctionHook($f, "QualityRatingFuncs::$f",
+				array_key_exists($f, $QRFunctionFlags) ? $QRFunctionFlags[$f] : 0
+			);
 		}
 		return true;
 	}
@@ -98,6 +105,32 @@ class QualityRatingFuncs {
 		$a = (int)$a; $b = (int)$b;
 		if ($a < $b) return mt_rand($a, $b);
 		else return mt_rand($b, $a);
+	}
+	public static function param ($parser, $frame, $args) {
+		/**
+		 * #param: Returns the first template parameter found in a list of parameter names
+		 *
+		 * The following wikitext is equivalent:
+		 * {{{param1|{{{param2|{{{param3|{{{param4|None of the parameters were found}}}}}}}}}}}
+		 * {{#param:param1|param2|param3|param4|None of the parameters were found}}
+		 *
+		 * @param $args array: The arguments passed to the parser function
+		 */
+		// Expand all PPFrame_DOM objects into wikitext
+		for ($i = 0; $i < count($args); $i++) {
+			$args[$i] = $frame->expand($args[$i]);
+		}
+		// Last argument is default, like {{{1|default}}}
+		$default = array_pop($args);
+		// Arguments passed to template
+		$frameArgs = $frame->getArguments();
+		foreach ($args as $arg) {
+			if (array_key_exists($arg, $frameArgs)) {
+				return $frameArgs[$arg];
+			}
+		}
+		// Nothing returned from loop, so none of the specified arguments were found
+		return $default;
 	}
 }
 
