@@ -12,10 +12,27 @@ $messages['qqq'] = array(
 	'rater-disable-ns' => 'List of namespaces where rating script is disabled',
 );
 
-global $QRFunctions;
+$QRFunctions = array(
+	'colorconvert',
+	'strlen',
+	'substr',
+	'strsplit',
+	'strpos',
+	'strrpos',
+	'stripos',
+	'strripos',
+	'strstr',
+	'stristr',
+	'strcount',
+	'stricount',
+	'strc',
+	'randint',
+	'param',
+);
 
 $magicWords = array();
 $magicWords['en'] = array();
 foreach ($QRFunctions as $f) {
     $magicWords['en'][$f] = array(0, $f);
 }
+
