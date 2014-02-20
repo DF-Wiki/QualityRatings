@@ -1,5 +1,7 @@
 <?php
 
+require_once "inc/Char.php";
+
 $QRFunctions = array(
 	'colorconvert',
 	'strlen',
@@ -14,6 +16,7 @@ $QRFunctions = array(
 	'strcount',
 	'stricount',
 	'strc',
+	'char',
 	'sha1',
 	'md5',
 	'splitrand',
@@ -113,6 +116,11 @@ class QualityRatingFuncs {
 	public static function splitrand ($parser, $str, $delim="\n") {
 		$parts = explode($delim, $str);
 		return $parts[mt_rand(0, count($parts) - 1)];
+	}
+	public static function char ($parser, $id) {
+		$id = max(1, min(255, (int)$id));
+		$ch = new QualityRatings\Char\Char($id);
+		return $ch->text;
 	}
 	
 	public static function randint ($parser, $a, $b=1) {
