@@ -16,6 +16,7 @@ $QRFunctions = array(
 	'strc',
 	'sha1',
 	'md5',
+	'splitrand',
 	'randint',
 	'param',
 );
@@ -109,6 +110,11 @@ class QualityRatingFuncs {
 	public static function md5 ($parser, $str) {
 		return md5($str);
 	}
+	public static function splitrand ($parser, $str, $delim="\n") {
+		$parts = explode($delim, $str);
+		return $parts[mt_rand(0, count($parts) - 1)];
+	}
+	
 	public static function randint ($parser, $a, $b=1) {
 		$a = (int)$a; $b = (int)$b;
 		if ($a < $b) return mt_rand($a, $b);
