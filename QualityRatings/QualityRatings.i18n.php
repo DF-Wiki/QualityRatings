@@ -26,6 +26,8 @@ $QRFunctions = array(
 	'strcount',
 	'stricount',
 	'strc',
+	'sha1',
+	'md5',
 	'randint',
 	'param',
 );

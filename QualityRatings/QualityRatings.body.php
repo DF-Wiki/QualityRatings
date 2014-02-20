@@ -14,6 +14,8 @@ $QRFunctions = array(
 	'strcount',
 	'stricount',
 	'strc',
+	'sha1',
+	'md5',
 	'randint',
 	'param',
 );
@@ -100,6 +102,12 @@ class QualityRatingFuncs {
 		// Convert escape characters into the characters they represent
 		$str = preg_replace('/\\[0ab]/', '', $str);
 		return stripcslashes($str);
+	}
+	public static function sha1 ($parser, $str) {
+		return sha1($str);
+	}
+	public static function md5 ($parser, $str) {
+		return md5($str);
 	}
 	public static function randint ($parser, $a, $b=1) {
 		$a = (int)$a; $b = (int)$b;
