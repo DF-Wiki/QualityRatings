@@ -34,6 +34,8 @@ class QualityRatingHooks {
 		return true;
 	}
 	public static function init (&$parser) {
+		global $wgRegexFunctionsPerPage;
+		$wgRegexFunctionsPerPage = 1000;
 		global $QRFunctions, $QRFunctionFlags;
 		foreach ($QRFunctions as $f) {
 			$parser->setFunctionHook($f, "QualityRatingFuncs::$f",
