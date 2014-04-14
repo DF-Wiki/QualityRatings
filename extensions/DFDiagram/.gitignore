@@ -1,0 +1,25 @@
+# Autosave
+*~
+
+# Tilesets
+*.png
+!/resources/*.png
+
+# Stuff
+/.ignore/*
+
+# Mac
+.DS_Store
+Icon
+
+# NetBeans
+/nbproject/private/
+/nbproject/*
+
+#Eclipse
+.project
+/.settings/
+.buildpath
+
+# Komodo
+*.komodoproject

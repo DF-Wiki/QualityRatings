@@ -1,0 +1,5 @@
+       [#0f0]Default  DFDiagram[#]
+DFDiagram is working! To display
+a  diagram,  you  need  to   put
+content  between  the  <diagram>
+tags.

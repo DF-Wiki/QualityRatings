@@ -1,0 +1,17 @@
+.dfdiagram table {
+	border-spacing: 0px; 
+	font-family: 'Courier New', 'Quicktype Mono', 'Bitstream Vera Sans Mono', 'Lucida Console', 'Lucida Sans Typewriter', monospace; 
+	font-size: 135%; 
+	font-weight: bold; 
+	line-height:.98em;
+	display: inline-table;
+}
+
+.dfdiagram td {
+	padding: 0px;
+	width: .63em;
+}
+
+.dfdiagram-frame {
+	display: inherit;
+}
