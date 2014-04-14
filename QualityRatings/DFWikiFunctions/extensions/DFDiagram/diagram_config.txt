@@ -1,0 +1,12 @@
+<tile name="floor">
+*tile=+
+color=7:1
+w=1
+h=1
+</tile>
+<tile name="uramp">
+*tile=^
+color=7:0
+w=1
+h=1
+</tile>
