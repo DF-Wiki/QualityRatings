@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('TESTWIKI')) {
-	#require_once 'extensions/DFDiagram/DFDiagram.php';
+	require_once 'extensions/DFDiagram/DFDiagram.php';
 }
 require_once 'tweaks/CVRedirect.php';
 
