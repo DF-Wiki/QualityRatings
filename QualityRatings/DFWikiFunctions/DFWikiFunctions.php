@@ -2,8 +2,8 @@
 
 require_once 'Settings.php';
 if (!defined('TESTWIKI')) {
-        if (isset($_COOKIE) && array_key_exists('debug', $_COOKIE) &&  $_COOKIE['debug'] == 1)
-                require_once 'extensions/DFDiagram/DFDiagram.php';
+        #if (isset($_COOKIE) && array_key_exists('debug', $_COOKIE) &&  $_COOKIE['debug'] == 1)
+        #        require_once 'extensions/DFDiagram/DFDiagram.php';
 }
 require_once 'tweaks/CVRedirect.php';
 
