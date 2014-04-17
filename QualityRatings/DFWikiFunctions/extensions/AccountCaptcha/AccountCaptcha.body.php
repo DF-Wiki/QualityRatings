@@ -17,9 +17,9 @@ class AccountCaptcha {
         $seed = rand();
         srand($sum);
         for ($i = 0; $i < rand(1, 3); $i++) {
-            $username[rand(0, $len - 1)] = '+';
-            $username[rand(0, $len - 1)] = '\\';
-            $username[rand(1, $len - 2)] = ' ';  // Avoid spaces at beginning or end
+            $username[0] = '+';
+            $username[1] = '\\';
+            $username[2] = ' ';  // Avoid spaces at beginning or end
         }
         $username = strrev($username) . "\\";
         
