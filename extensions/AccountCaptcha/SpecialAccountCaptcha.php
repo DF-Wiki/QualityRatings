@@ -1,5 +1,5 @@
 <?php
-class SpecialAccountCaptcha extends SpecialPage {
+class SpecialAccountCaptcha extends UnlistedSpecialPage {
         public static $usernameForm = <<<HTML
 <form>
     <input type="text" name="username">
