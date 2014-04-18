@@ -1,4 +1,17 @@
 <?php
+
+class ACRand {
+    public static $seed = 0;
+    public static function srand($seed) {
+        self::$seed = $seed;
+    }
+    public static function rand($min, $max) {
+        self::srand(self::$seed + 452930459);
+        if ($max - $min + 1 == 0) return 0;
+        return self::$seed % ($max - $min + 1) + $min;
+    }
+}
+
 class AccountCaptcha {
     public static function generateToken($token) {
         global $ACTokenFunctions;
@@ -12,19 +25,15 @@ class AccountCaptcha {
         $sum = 0;
         for ($i = 0; $i < $len; $i++) {
             // Tokens should be ASCII, so this should work
-            $sum += ord($i);
+            $sum += ord(substr($username, $i, 1));
         }
-        $seed = rand();
-        srand($sum);
-        for ($i = 0; $i < rand(1, 3); $i++) {
-            $username[0] = '+';
-            $username[1] = '\\';
-            $username[2] = ' ';  // Avoid spaces at beginning or end
+        ACRand::srand($sum);
+        for ($i = 0; $i < ACRand::rand(1, 3); $i++) {
+            $username[ACRand::rand(0, $len - 1)] = '+';
+            $username[ACRand::rand(0, $len - 1)] = '\\';
+            $username[ACRand::rand(1, $len - 2)] = ' ';  // Avoid spaces at beginning or end
         }
         $username = strrev($username) . "\\";
-        
-        // change back to random seed
-        srand($seed);
         return $username;
     }
 }
