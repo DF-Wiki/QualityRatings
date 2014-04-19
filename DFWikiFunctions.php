@@ -5,6 +5,13 @@ if (!defined('TESTWIKI')) {
 	#require_once 'extensions/DFDiagram/DFDiagram.php';
 	require_once 'extensions/AccountCaptcha/AccountCaptcha.php';
 }
+global $wgWikiEditorFeatures;
+if (!isset($wgWikiEditorFeatures) && array_key_exists('debug', $_GET)) {
+	require_once 'extensions/WikiEditor/WikiEditor.php';
+	global $wgDefaultUserOptions;
+	$wgDefaultUserOptions['usebetatoolbar'] = 1;
+	$wgDefaultUserOptions['usebetatoolbar-cgd'] = 1;
+}
 require_once 'tweaks/CVRedirect.php';
 
 $wgExtensionCredits['DFWikiFunctions'][] = array(
