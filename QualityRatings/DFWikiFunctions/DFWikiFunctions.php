@@ -6,7 +6,7 @@ if (!defined('TESTWIKI')) {
 	require_once 'extensions/AccountCaptcha/AccountCaptcha.php';
 }
 global $wgWikiEditorFeatures;
-if (!isset($wgWikiEditorFeatures) && array_key_exists('debug', $_GET)) {
+if (!isset($wgWikiEditorFeatures)) {
 	require_once 'extensions/WikiEditor/WikiEditor.php';
 	global $wgDefaultUserOptions;
 	$wgDefaultUserOptions['usebetatoolbar'] = 1;
