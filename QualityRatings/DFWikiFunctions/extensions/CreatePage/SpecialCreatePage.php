@@ -1,13 +1,4 @@
 <?php
-if (isset($_GET) && array_key_exists($_GET, 'debug')) {
-    error_reporting( E_ALL | E_STRICT );
-    ini_set( 'display_errors', 1 );
-    
-    // Debugging
-    global $wgShowErrors,  $wgShowExceptionDetails;
-    $wgShowErrors = true;
-    $wgShowExceptionDetails = true;
-}
 class SpecialCreatePage extends SpecialPage {
     public static $createForm = <<<HTML
 <form method="post">
