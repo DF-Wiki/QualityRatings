@@ -16,7 +16,8 @@ HTML;
 </form>
 HTML;
     public static function getConfirmToken($request) {
-        return md5($request->getAllHeaders()['USER-AGENT']);
+        $headers = $request->getAllHeaders();
+        return md5($headers['USER-AGENT']);
     }
     public function __construct() {
         parent::__construct('CreatePage');
