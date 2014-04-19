@@ -27,11 +27,12 @@ if (array_key_exists('debug', $_GET)) {
     ini_set('display_startup_errors', 1);
     
     // Debugging
-    global $wgShowErrors,  $wgShowExceptionDetails, $wgShowSQLErrors, $wgDebugDumpSql;
+    global $wgShowErrors,  $wgShowExceptionDetails, $wgShowSQLErrors, $wgDebugDumpSql, $wgDebugLogFile;
     $wgShowErrors = true;
     $wgShowExceptionDetails = true;
     $wgShowSQLErrors = true;
     $wgDebugDumpSql  = true;
+    $wgDebugLogFile = '';
     };
 }
 
