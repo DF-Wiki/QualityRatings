@@ -52,7 +52,7 @@ HTML;
     public function confirm($output, $page) {
         $title = Title::newFromText($page);
         $output->setPageTitle("Creating page \"$page\"");
-        if ($title->isKnown()) {
+        if ($title->isKnown() || $title->mNamespace == NS_MEDIAWIKI) {
             $output->addHTML($this->msg('createpage-exists')->params($page)->parse());
             $this->displayForm($output);
             return false;
