@@ -20,15 +20,18 @@ foreach ($DFReleases as $id => $ns) {
     $wgNamespaceAliases['Rel' . $id . '_talk'] = $wgNamespaceAliases['V' . $id . '_talk'] = $ns;
 }
 
-if (isset($_GET) && array_key_exists('debug', $_GET)) {
+if (array_key_exists('debug', $_GET)) {
     $wgHooks['ParserFirstCallInit'][] = function($parser=null){
     error_reporting( E_ALL | E_STRICT );
     ini_set( 'display_errors', 1 );
+    ini_set('display_startup_errors', 1);
     
     // Debugging
-    global $wgShowErrors,  $wgShowExceptionDetails;
+    global $wgShowErrors,  $wgShowExceptionDetails, $wgShowSQLErrors, $wgDebugDumpSql;
     $wgShowErrors = true;
     $wgShowExceptionDetails = true;
+    $wgShowSQLErrors = true;
+    $wgDebugDumpSql  = true;
     };
 }
 
