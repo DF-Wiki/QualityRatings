@@ -33,6 +33,7 @@ if (array_key_exists('debug', $_GET)) {
     $wgShowSQLErrors = true;
     $wgDebugDumpSql  = true;
     $wgDebugLogFile = '';
+    return true;
     };
 }
 
