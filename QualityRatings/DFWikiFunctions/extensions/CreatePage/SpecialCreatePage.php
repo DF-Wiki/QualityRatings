@@ -4,6 +4,7 @@ if (isset($_GET) && array_key_exists($_GET, 'debug')) {
     ini_set( 'display_errors', 1 );
     
     // Debugging
+    global $wgShowErrors,  $wgShowExceptionDetails;
     $wgShowErrors = true;
     $wgShowExceptionDetails = true;
 }
