@@ -87,7 +87,7 @@ HTML;
         $page = WikiPage::factory($title);
         $user = User::newFromName($this->msg('createpage-user')->plain());
         $page->doEdit(
-            $this->msg('createpage-newtext')->plain(),
+            $this->msg('createpage-newtext')->params($username)->plain(),
             $this->msg('createpage-summary')->params($username)->plain(),
             0, false,  // flags, baseRevId
             $user

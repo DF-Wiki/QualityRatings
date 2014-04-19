@@ -17,7 +17,7 @@ $messages[ 'en' ] = array(
     'createpage-summary' => 'Creating page - requested by [[User:$1|$1]] ([[User_talk:$1|talk]] | [[Special:Contributions/$1|contribs]])',
     'createpage-success' => 'Created page [[$1]].',
     'createpage-unneeded' => 'You already have permission to create [[$1]].',
-    'createpage-newtext' => '<!-- created page -->',
+    'createpage-newtext' => '<!-- created page - requested by $1 -->',
     'createpage-user' => 'Page creator',
 );
  
