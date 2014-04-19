@@ -20,7 +20,7 @@ foreach ($DFReleases as $id => $ns) {
     $wgNamespaceAliases['Rel' . $id . '_talk'] = $wgNamespaceAliases['V' . $id . '_talk'] = $ns;
 }
 
-if (array_key_exists('debug', $_GET)) { //print(1);
+if (array_key_exists('debug', $_GET) && false) { //print(1);
     function set_debug_mode($a=0, $b=0, $c=0, $d=0, $e=0){
 	error_reporting( E_ALL | E_STRICT );
 	ini_set( 'display_errors', 1 );
