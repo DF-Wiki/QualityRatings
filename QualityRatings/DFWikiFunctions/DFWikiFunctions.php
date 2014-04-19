@@ -12,6 +12,7 @@ if (!isset($wgWikiEditorFeatures)) {
 	$wgDefaultUserOptions['usebetatoolbar'] = 1;
 	$wgDefaultUserOptions['usebetatoolbar-cgd'] = 1;
 }
+require_once 'extensions/CreatePage/CreatePage.php';
 require_once 'tweaks/CVRedirect.php';
 
 $wgExtensionCredits['DFWikiFunctions'][] = array(
