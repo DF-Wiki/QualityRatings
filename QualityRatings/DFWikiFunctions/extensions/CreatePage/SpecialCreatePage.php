@@ -52,12 +52,12 @@ HTML;
     public function confirm($output, $page) {
         $title = Title::newFromText($page);
         if (!$title) {
-            $output->addHTML($this->msg('createpage-invalid')->params($page)->parse());
+            $output->addHTML($this->msg('createpage-error-invalid')->params($page)->parse());
             return $this->displayForm($output);
         }
         $output->setPageTitle("Creating page \"$page\"");
         if ($title->isKnown() || $title->mNamespace == NS_MEDIAWIKI) {
-            $output->addHTML($this->msg('createpage-exists')->params($page)->parse());
+            $output->addHTML($this->msg('createpage-error-exists')->params($page)->parse());
             $this->displayForm($output);
             return false;
         }
@@ -76,12 +76,21 @@ HTML;
             $this->confirm($output, $opts['page']);
             return false;
         }
-        $this->doCreate($page);
+        $result = $this->doCreate($page);
+        if ($result !== true) {
+            // An error occured
+            $output->setPageTitle('Could not create page');
+            $output->addHTML($result);
+            return;
+        }
         $output->setPageTitle('Created page');
         $output->addHTML($this->msg('createpage-success')->params($page)->parse());
     }
     public function doCreate($pageTitle) {
         global $wgUser;
+        if ($wgUser->isBlocked()) {
+            return $this->msg('createpage-error-blocked')->parse();
+        }
         $username = $wgUser->getName();
         $title = Title::newFromText($pageTitle);
         $page = WikiPage::factory($title);
