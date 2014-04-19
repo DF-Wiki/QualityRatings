@@ -82,7 +82,7 @@ HTML;
     }
     public function doCreate($pageTitle) {
         global $wgUser;
-        $username = $wgUser->mName;
+        $username = $wgUser->getName();
         $title = Title::newFromText($pageTitle);
         $page = WikiPage::factory($title);
         $user = User::newFromName($this->msg('createpage-user')->plain());
