@@ -21,6 +21,7 @@ foreach ($DFReleases as $id => $ns) {
 }
 
 if (isset($_GET) && array_key_exists($_GET, 'debug')) {
+    $wgHooks['ParserFirstCallInit'][] = function($parser=null){
     error_reporting( E_ALL | E_STRICT );
     ini_set( 'display_errors', 1 );
     
@@ -28,5 +29,6 @@ if (isset($_GET) && array_key_exists($_GET, 'debug')) {
     global $wgShowErrors,  $wgShowExceptionDetails;
     $wgShowErrors = true;
     $wgShowExceptionDetails = true;
+    };
 }
 
