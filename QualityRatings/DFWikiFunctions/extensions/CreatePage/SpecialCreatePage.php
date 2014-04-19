@@ -77,12 +77,14 @@ HTML;
         $output->addHTML($this->msg('createpage-success')->params($page)->parse());
     }
     public function doCreate($pageTitle) {
+        global $wgUser;
+        $username = $wgUser->mName;
         $title = Title::newFromText($pageTitle);
         $page = WikiPage::factory($title);
         $user = User::newFromName($this->msg('createpage-user')->plain());
         $page->doEdit(
             $this->msg('createpage-newtext')->plain(),
-            'Creating page',
+            $this->msg('createpage-summary')->params($username)->plain(),
             0, false,  // flags, baseRevId
             $user
         );
