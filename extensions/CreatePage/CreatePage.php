@@ -8,7 +8,7 @@ $wgExtensionCredits['specialpage'][] = array(
     'author' => 'Lethosor',
     'url' => 'https://github.com/lethosor/DFWikiFunctions',
     'descriptionmsg' => 'createpage-desc',
-    'version' => '0.2',
+    'version' => '0.2.1',
 );
 
 $wgExtensionMessagesFiles['CreatePage'] = __DIR__ . '/CreatePage.i18n.php';

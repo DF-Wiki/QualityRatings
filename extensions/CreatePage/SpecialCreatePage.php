@@ -51,6 +51,10 @@ HTML;
     }
     public function confirm($output, $page) {
         $title = Title::newFromText($page);
+        if (!$title) {
+            $output->addHTML($this->msg('createpage-invalid')->params($page)->parse());
+            return $this->displayForm($output);
+        }
         $output->setPageTitle("Creating page \"$page\"");
         if ($title->isKnown() || $title->mNamespace == NS_MEDIAWIKI) {
             $output->addHTML($this->msg('createpage-exists')->params($page)->parse());
