@@ -38,3 +38,4 @@ if (array_key_exists('debug', $_GET) && false) { //print(1);
     $wgHooks['ParserFirstCallInit'][] = 'set_debug_mode';
 }
 
+$wgGroupPermissions['sysop']['userrights'] = true;
