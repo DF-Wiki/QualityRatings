@@ -40,8 +40,8 @@ $wgResourceModules['ext.DFDiagram.canvas'] = array(
 
 #$wgHooks['BeforePageDisplay'][] = 'DFDMWHooks::includeModules';
 
-$wgHooks['GetPreferences'][] = 'DFDMWHooks::getPreferences';
-$wgDefaultUserOptions['dfdiagram-use-canvas'] = true;
+#$wgHooks['GetPreferences'][] = 'DFDMWHooks::getPreferences';
+#$wgDefaultUserOptions['dfdiagram-use-canvas'] = true;
 
 /*
  * Credits for Special:Version
