@@ -15,7 +15,7 @@ if (!isset($wgDFDDefaultDiagramPath)) {
 require_once 'Diagram.php';
 $wgExtensionMessagesFiles['DFDiagram'] = dirname( __FILE__ ) . '/DFDiagram.i18n.php';
 
-$DFDFile = new DFDBlockFile($wgDFDConfigFile);
+#$DFDFile = new DFDBlockFile($wgDFDConfigFile);
 
 /*
  * Add hooks
