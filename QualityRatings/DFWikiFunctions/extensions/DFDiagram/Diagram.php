@@ -6,10 +6,10 @@
  * file. Include DFDiagram.php instead.
  */
 
-require_once 'Char.php';
-require_once 'Color.php';
-require_once 'Grid.php';
-require_once 'VarDict.php';
+//require_once 'Char.php';
+//require_once 'Color.php';
+//require_once 'Grid.php';
+//require_once 'VarDict.php';
 function DFDParseTokens($string){
 	/*
 	 * Takes a string and returns an array of tokens (e.g. Color tags, tiles, etc.)
