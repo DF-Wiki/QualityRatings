@@ -21,7 +21,7 @@ $wgExtensionMessagesFiles['DFDiagram'] = dirname( __FILE__ ) . '/DFDiagram.i18n.
  * Add hooks
  */
 
-$wgHooks['ParserFirstCallInit'][] = 'DFDMWHooks::init';
+#$wgHooks['ParserFirstCallInit'][] = 'DFDMWHooks::init';
 
 $wgResourceModules['ext.DFDiagram'] = array(
 	'styles' => "modules/ext.DFDiagram.css",
