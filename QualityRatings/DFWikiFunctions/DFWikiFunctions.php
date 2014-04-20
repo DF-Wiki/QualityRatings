@@ -2,7 +2,7 @@
 
 require_once 'Settings.php';
 if (!defined('TESTWIKI')) {
-	require_once 'extensions/DFDiagram/DFDiagram.php';
+	#require_once 'extensions/DFDiagram/DFDiagram.php';
 	require_once 'extensions/AccountCaptcha/AccountCaptcha.php';
 }
 global $wgWikiEditorFeatures;
