@@ -24,20 +24,20 @@
 //
 //#$wgHooks['ParserFirstCallInit'][] = 'DFDMWHooks::init';
 //
-//$wgResourceModules['ext.DFDiagram'] = array(
-//	'styles' => "modules/ext.DFDiagram.css",
-//	'localBasePath' => __DIR__,
-//	'remoteExtPath' => 'DFDiagram'
-//);
-//
-//$wgResourceModules['ext.DFDiagram.canvas'] = array(
-//	'scripts' => array(
-//		'modules/df-tileset/df-tileset.js',
-//		'modules/ext.DFDiagram.js',
-//	),
-//	'localBasePath' => __DIR__,
-//	'remoteExtPath' => 'DFDiagram'
-//);
+$wgResourceModules['ext.DFDiagram'] = array(
+	'styles' => "modules/ext.DFDiagram.css",
+	'localBasePath' => __DIR__,
+	'remoteExtPath' => 'DFDiagram'
+);
+
+$wgResourceModules['ext.DFDiagram.canvas'] = array(
+	'scripts' => array(
+		'modules/df-tileset/df-tileset.js',
+		'modules/ext.DFDiagram.js',
+	),
+	'localBasePath' => __DIR__,
+	'remoteExtPath' => 'DFDiagram'
+);
 //
 //#$wgHooks['BeforePageDisplay'][] = 'DFDMWHooks::includeModules';
 //
@@ -54,6 +54,6 @@ $wgExtensionCredits['DFDiagram'][] = array(
 	'author' =>'Lethosor',
 	'url' => 'https://github.com/lethosor/DFDiagram',
 	'description' => 'Adds support for DF-style diagrams',
-	'version'  => '0.4-debug2',
+	'version'  => '0.4-debug3',
 );
 
