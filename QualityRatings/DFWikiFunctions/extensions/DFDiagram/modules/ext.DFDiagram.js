@@ -1,5 +1,5 @@
 jQuery(function($){
-	Tileset.Font.loadFromURL(wgScriptPath + '/extensions/QualityRatings/DFWikiFunctions/DFDiagram/resources/8x12.png').on('ready', function(evt, font){
+	Tileset.Font.loadFromURL(wgScriptPath + '/extensions/QualityRatings/DFWikiFunctions/extensions/DFDiagram/resources/8x12.png').on('ready', function(evt, font){
 		$('.dfdiagram').each(function(i, e){
 			var frameList = $();
 			$(e).find('.dfdiagram-frame').each(function(i, e) {
