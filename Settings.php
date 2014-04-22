@@ -19,3 +19,11 @@ foreach ($DFReleases as $id => $ns) {
     $wgNamespaceAliases['Rel' . $id] = $wgNamespaceAliases['V' . $id] = $ns;
     $wgNamespaceAliases['Rel' . $id . '_talk'] = $wgNamespaceAliases['V' . $id . '_talk'] = $ns;
 }
+
+$wgAutoRedirectNamespaces = array(
+    '' => array('DF2012', 'v0.31', '40d', '23a'),
+);
+$wgAutoRedirectChecks = array(
+    'mb_strtolower',
+);
+

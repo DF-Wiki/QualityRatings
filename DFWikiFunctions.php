@@ -1,6 +1,5 @@
 <?php
 
-require_once 'Settings.php';
 if (!defined('TESTWIKI')) {
 	#require_once 'extensions/DFDiagram/DFDiagram.php';
 	require_once 'extensions/AccountCaptcha/AccountCaptcha.php';
@@ -14,6 +13,8 @@ if (!isset($wgWikiEditorFeatures)) {
 }
 require_once 'extensions/CreatePage/CreatePage.php';
 require_once 'tweaks/CVRedirect.php';
+
+require_once 'Settings.php';
 
 $wgExtensionCredits['DFWikiFunctions'][] = array(
 	'path' => __FILE__,
