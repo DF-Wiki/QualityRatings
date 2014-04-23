@@ -12,7 +12,7 @@ $wgExtensionCredits['AutoRedirect'][] = array(
 	'author' =>'Lethosor',
 	'url' => 'https://github.com/lethosor/DFWikiFunctions',
 	'description' => 'Automatically redirects pages to more appropriate titles',
-	'version'  => '1.0',
+	'version'  => '1.0.1',
 );
 
 $wgAutoRedirectNamespaces = array();
@@ -97,6 +97,7 @@ class AutoRedirect {
 		 * Takes a Title and returns a new Title to redirect to, or false if
 		 * the current title is acceptable.
 		 */
+		if ($title->exists()) return false;
 		if (!($title instanceof Title)) {
 			$title = Title::newFromText($title);
 		}
