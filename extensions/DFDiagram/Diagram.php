@@ -398,6 +398,7 @@ class DFDMWHooks {
 		$user = $skin->getContext()->getUser();
 
 		$outPage->addModuleStyles(array('ext.DFDiagram'));
+		$outPage->addModules(array('ext.DFDiagram'));
 		if($user->getOption('dfdiagram-use-canvas')) {
 			$outPage->addModules('ext.DFDiagram.canvas');
 		}
