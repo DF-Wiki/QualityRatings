@@ -25,6 +25,8 @@ $wgHooks['ParserFirstCallInit'][] = 'DFDMWHooks::init';
 
 $wgResourceModules['ext.DFDiagram'] = array(
 	'styles' => "modules/ext.DFDiagram.css",
+	'localBasePath' => __DIR__,
+	'remoteExtPath' => 'DFDiagram'
 );
 
 $wgResourceModules['ext.DFDiagram.canvas'] = array(
