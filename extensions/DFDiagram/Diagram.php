@@ -21,9 +21,9 @@ function DFDParseTokens($string){
 	$in_tag = false;
 	// Index where current tag begins
 	$tag_start = 0;
-	
+
 	$tokens = array();
-	
+
 	for ($index = 0; $index < strlen($string); $index++) {
 		$char = mb_substr($string, $index, 1, 'UTF-8');
 		if (!mb_strlen($char)) {
@@ -66,10 +66,10 @@ class DFDBlockFile {
 			if ($type == 'tile') {
 				$this->blocks[] = new DFDTile($matches[0][$index]);
 			}
-			
+
 		}
 	}
-	
+
 	function get_block($name){
 		/*
 		 * Returns a block in $this->block_list with the given name
@@ -92,7 +92,7 @@ class DFDTile {
 			trigger_error("Tag {$lines[0]} does not fit format! Skipping");
 		}
 		$tag = array();
-		preg_match('/<tile name="(.*?)">/', $lines[0], $tag); 
+		preg_match('/<tile name="(.*?)">/', $lines[0], $tag);
 		$this->name = $tag[1];
 	}
 }
@@ -131,12 +131,12 @@ class DFDTable {
 		/*
 		 * Set up table
 		 */
-		
+
 		$fgcolor = $this->fg;
 		$bgcolor = $this->bg;
-				
+
 		// Parse variables first - otherwise, characters won't be displayed properly
-		
+
 		$var_tags = array();
 		preg_match_all('/\[\$[^]]+\]/', $this->text, $var_tags);
 		if (count($var_tags) && $var_tags[0] != null) {
@@ -159,12 +159,12 @@ class DFDTable {
 				}
 			}
 		}
-		
+
 		// Clean up blank lines
 		$this->text = preg_replace('/\n+/', "\n", $this->text);
 		// And possible lines at the beginning
 		$this->text = preg_replace('/^\n+/', '', $this->text);
-		
+
 		// Set up grid
 		$this->grid = new DGrid();
 		$this->lines = preg_split('/\n/', $this->text);
@@ -174,8 +174,8 @@ class DFDTable {
 		for ($row = 0; $row < count($this->lines); $row++) {
 			$this->tokens[$row] = DFDParseTokens($this->lines[$row]);
 		}
-		 
-		
+
+
 		for ($row = 0; $row < count($this->tokens); $row++) {
 			$tokens = $this->tokens[$row];
 			$col = -1;
@@ -280,7 +280,7 @@ class DFDiagram {
 	 *
 	 * Note that this class uses DFDTable to render the body of the diagram.
 	 */
-	
+
 	// A DFDTable
 	private $table;
 	public static function parseXMLAttrs($string) {
@@ -330,7 +330,7 @@ class DFDiagram {
 			$opts['display'] = 'block';
 		$opts['display'] = preg_replace('/[^A-Za-z-]/', '', $opts['display']);
 		$this->opts = $opts;
-		
+
 		$this->tables = array();
 		$frames = array();
 		if (!preg_match_all('/\n*<(frame[^>]*)>([\s\S]*?)<\/frame>\n*/', $text, $frames, PREG_SET_ORDER)) {
@@ -365,8 +365,8 @@ $html
 </div>
 HTML;
 	}
-	
-	
+
+
 }
 
 class DFDMWHooks {
@@ -397,11 +397,11 @@ class DFDMWHooks {
 		 */
 		$user = $skin->getContext()->getUser();
 
-		$outPage->addModules(array('ext.DFDiagram'));		
+		$outPage->addModuleStyles(array('ext.DFDiagram'));
 		if($user->getOption('dfdiagram-use-canvas')) {
 			$outPage->addModules('ext.DFDiagram.canvas');
 		}
-		
+
 		return true;
 	}
 	static public function getPreferences($user, &$preferences) {
