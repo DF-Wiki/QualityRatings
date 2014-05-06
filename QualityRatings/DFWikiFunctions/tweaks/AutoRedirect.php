@@ -128,6 +128,7 @@ $wgHooks['BeforeParserFetchTemplateAndtitle'][] = function($parser, $title, &$sk
 	return true;
 };
 $wgHooks['TitleIsAlwaysKnown'][] = function($title, &$result) {
+	return true;
 	// Handles links (prevents them from appearing as redlinks when they actually work)
 	$new = AutoRedirect::redirect($title);
 	if ($new) {
