@@ -22,6 +22,7 @@ $QRFunctions = array(
 	'splitrand',
 	'randint',
 	'param',
+	'timestamp',
 );
 $QRFunctionFlags = array(
 	'param' => SFH_OBJECT_ARGS,
@@ -153,6 +154,12 @@ class QualityRatingFuncs {
 		}
 		// Nothing returned from loop, so none of the specified arguments were found
 		return $default;
+	}
+	public static function timestamp ($parser) {
+		global $wgContLang;
+		$timestamp = MWTimestamp::getLocalInstance($parser->mOptions->getTimestamp());
+		$timezone = $timestamp->format('T');
+		return $wgContLang->timeanddate($timestamp->format('YmdHis'), false, false) . " ($timezone)";
 	}
 }
 
