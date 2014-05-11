@@ -32,7 +32,6 @@ $QRFunctions = array(
 	'splitrand',
 	'randint',
 	'param',
-	'timestamp',
 );
 
 $magicWords = array();
