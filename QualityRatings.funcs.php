@@ -3,6 +3,8 @@
 require_once "inc/Char.php";
 
 $QRFunctions = array(
+	'qualityrating',
+
 	'colorconvert',
 	'strlen',
 	'substr',
@@ -41,6 +43,10 @@ class QualityRatingFunctionHooks {
 }
 
 class QualityRatingFuncs {
+	public static function qualityrating ($parser, $page) {
+		global $wgQualityRatings;
+		return $wgQualityRatings[QualityRatingHandler::getRating($page)];
+	}
 	public static function error ($text) {
 		return '<span class="error">' . implode(func_get_args(), ' ') . '</span>';
 	}

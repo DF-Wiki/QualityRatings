@@ -8,7 +8,7 @@ if (!defined('TESTWIKI')) {
 
 $wgResourceModules['ext.QualityRatings'] = array(
 	'scripts' => array(
-		'../rater.js',
+		'rater.js',
 		'modules/jquery.color-2.1.0.min.js'
 	),
 	'localBasePath' => __DIR__,
