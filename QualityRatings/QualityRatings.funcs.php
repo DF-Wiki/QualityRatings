@@ -28,11 +28,7 @@ $QRFunctionFlags = array(
 );
 
 
-class QualityRatingHooks {
-	public static function includeModules ($outPage) {
-		$outPage->addModules('ext.QualityRatings');
-		return true;
-	}
+class QualityRatingFunctionHooks {
 	public static function init (&$parser) {
 		global $QRFunctions, $QRFunctionFlags;
 		foreach ($QRFunctions as $f) {

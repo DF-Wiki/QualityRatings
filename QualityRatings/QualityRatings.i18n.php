@@ -32,6 +32,7 @@ $QRFunctions = array(
 	'splitrand',
 	'randint',
 	'param',
+	'qualityrating',
 );
 
 $magicWords = array();

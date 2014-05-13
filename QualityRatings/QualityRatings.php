@@ -1,5 +1,6 @@
 <?php
 
+require_once 'QualityRatings.body.php';
 require_once 'QualityRatings.funcs.php';
 if (!defined('TESTWIKI')) {
     require_once 'DFWikiFunctions/DFWikiFunctions.php';
@@ -19,7 +20,7 @@ $wgResourceModules['ext.QualityRatings'] = array(
 );
 
 $wgHooks['BeforePageDisplay'][] = 'QualityRatingHooks::includeModules';
-$wgHooks['ParserFirstCallInit'][] = 'QualityRatingHooks::init';
+$wgHooks['ParserFirstCallInit'][] = 'QualityRatingFunctionHooks::init';
 $wgExtensionMessagesFiles['QualityRatings'] = __DIR__ . '/QualityRatings.i18n.php';
 
 
