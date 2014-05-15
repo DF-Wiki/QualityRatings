@@ -2,7 +2,7 @@
 
 require_once 'QualityRatings.body.php';
 if (!defined('TESTWIKI')) {
-    require_once 'DFWikiFunctions/DFWikiFunctions.php';
+    #require_once 'DFWikiFunctions/DFWikiFunctions.php';
 }
 
 $wgResourceModules['ext.QualityRatings'] = array(
@@ -33,6 +33,6 @@ $wgExtensionCredits['QualityRatings'][] = array(
 	'author' =>'[[User:Lethosor|Lethosor]]',
 	'url' => 'https://github.com/lethosor/dfwiki-rater',
 	'description' => 'Dwarf Fortress wiki rating script',
-	'version'  => '1.0.5-dev-test',
+	'version'  => '1.0.5-dev',
 );
 
