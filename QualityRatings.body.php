@@ -21,11 +21,11 @@ class QualityRatingHandler {
 		}
 		return $title;
 	}
-	public static function getRatingData ($title) {
-		$title = self::toTitle($title);
-		$title = Title::newFromText($title->getPrefixedDBkey() . '/rating_log');
-		$content = WikiPage::factory($title)->getText();
-		$data = json_decode($content, true);   // Return objects as arrays
+	public static function isValidRatingData ($text) {
+		return !!json_decode($text);
+	}
+	public static function textToRatingData ($text) {
+		$data = json_decode($text, true);   // Return objects as arrays
 		if (!is_array($data)) {
 			// Log does not exist
 			return array(self::$defaultLogEntry);
@@ -36,6 +36,12 @@ class QualityRatingHandler {
 			}
 		}
 		return $data;
+	}
+	public static function getRatingData ($title) {
+		$title = self::toTitle($title);
+		$title = Title::newFromText($title->getPrefixedDBkey() . '/rating_log');
+		$content = WikiPage::factory($title)->getText();
+		return self::textToRatingData($content);
 	}
 	public static function getRating ($title) {
 		$title = self::toTitle($title);
@@ -66,6 +72,9 @@ class QualityRatingHandler {
 			User::newFromName('Rating script')
 		);
 	}
+	public static function generateLogHTML ($text) {
+		return '*Not implemented';
+	}
 }
 
 
@@ -76,5 +85,16 @@ class QualityRatingHooks {
 	}
 	public static function getReservedUsernames (&$reservedUsernames) {
 		$reservedUsernames[] = 'Rating script';
+		return true;
+	}
+	public static function onParserBeforeStrip ($parser, &$text, &$strip_state) {
+		$titleParts = explode('/', $parser->getTitle()->getFullText());
+		$subpageText = $titleParts[count($titleParts) - 1];
+		if ($subpageText != 'rating log')
+			return true;
+		if (!QualityRatingHandler::isValidRatingData($text))
+			return true;
+		$text = QualityRatingHandler::generateLogHTML($text);
+		return true;
 	}
 }
