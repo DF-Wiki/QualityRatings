@@ -13,6 +13,7 @@ class QualityRatingHandler {
 	private static $ratingCache = array();
 	private static $defaultLogEntry = array(
 		'rating' => -1,
+		'user' => 'Unknown user',
 	);
 	public static function toTitle ($title) {
 		if (!($title instanceof Title)) {
@@ -46,6 +47,25 @@ class QualityRatingHandler {
 		}
 		return self::$ratingCache[$dbkey];
 	}
+	public static function setRating ($title, $rating) {
+		global $wgUser;
+		$title = self::toTitle($title);
+		$data = self::getRatingData($title);
+		$data[] = array(
+			'rating' => $rating,
+			'user' => $wgUser->getName(),
+		);
+		$content = json_encode($data);
+		$logTitle = Title::newFromText($title->getPrefixedDBkey() . '/rating_log');
+		$log = WikiPage::factory($logTitle);
+		$log->doEdit(
+			$content,
+			'Updating log',
+			EDIT_SUPPRESS_RC,
+			false,  # baseRevId
+			User::newFromName('Rating script')
+		);
+	}
 }
 
 
@@ -53,5 +73,8 @@ class QualityRatingHooks {
 	public static function includeModules ($outPage) {
 		$outPage->addModules('ext.QualityRatings');
 		return true;
+	}
+	public static function getReservedUsernames (&$reservedUsernames) {
+		$reservedUsernames[] = 'Rating script';
 	}
 }

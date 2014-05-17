@@ -20,6 +20,8 @@ $wgResourceModules['ext.QualityRatings'] = array(
 );
 
 $wgHooks['BeforePageDisplay'][] = 'QualityRatingHooks::includeModules';
+$wgHooks['UserGetReservedNames'][] = 'QualityRatingHooks::getReservedUsernames';
+
 $wgHooks['ParserFirstCallInit'][] = 'QualityRatingFunctionHooks::init';
 $wgExtensionMessagesFiles['QualityRatings'] = __DIR__ . '/QualityRatings.i18n.php';
 
