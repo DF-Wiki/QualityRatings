@@ -15,7 +15,7 @@ $ACCredits = array(
     'author' => '[[User:Lethosor|Lethosor]]',
     'url' => 'https://github.com/lethosor/mw-account-captcha',
     'descriptionmsg' => 'accountcaptcha-desc',
-    'version' => '0.1.1-test',
+    'version' => '0.1.1',
 );
 
 $wgExtensionCredits['antispam'][] = $wgExtensionCredits['specialpage'][] = $ACCredits;
