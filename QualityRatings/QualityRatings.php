@@ -1,9 +1,6 @@
 <?php
 
 require_once 'QualityRatings.body.php';
-if (!defined('TESTWIKI')) {
-    require_once 'DFWikiFunctions/DFWikiFunctions.php';
-}
 
 $wgResourceModules['ext.QualityRatings'] = array(
 	'scripts' => array(
