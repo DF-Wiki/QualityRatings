@@ -37,6 +37,10 @@ class QualityRatingHandler {
 		}
 		return $data;
 	}
+	public static function getRatingName ($rating) {
+		global $wgQualityRatings;
+		return $wgQualityRatings[$rating];
+	}
 	public static function getRatingData ($title) {
 		$title = self::toTitle($title);
 		$title = Title::newFromText($title->getPrefixedDBkey() . '/rating_log');
@@ -73,7 +77,14 @@ class QualityRatingHandler {
 		);
 	}
 	public static function generateLogHTML ($text) {
-		return '*Not implemented';
+		$data = self::textToRatingData($text);
+		$data = array_reverse($data);
+		$output = '';
+		foreach ($data as $logEntry) {
+			$output .= '*' . self::getRatingName($logEntry['rating']);
+			$output .= "\n";
+		}
+		return $output;
 	}
 }
 
