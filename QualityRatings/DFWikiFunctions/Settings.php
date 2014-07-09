@@ -21,7 +21,7 @@ foreach ($DFReleases as $id => $ns) {
 }
 
 $wgAutoRedirectNamespaces = array(
-    '' => array('DF2012', 'v0.31', '40d', '23a'),
+    '' => array('DF2014', 'v0.34', 'v0.31', '40d', '23a'),
 );
 $wgAutoRedirectChecks = array(
     'mb_strtolower',
