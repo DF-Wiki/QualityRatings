@@ -22,6 +22,7 @@ $QRFunctions = array(
 	'splitrand',
 	'randint',
 	'param',
+	'ordinal',
 );
 $QRFunctionFlags = array(
 	'param' => SFH_OBJECT_ARGS,
@@ -45,6 +46,9 @@ class QualityRatingHooks {
 }
 
 class QualityRatingFuncs {
+	private static function in_range($n, $a, $b) {
+		return $n >= $a && $n <= $b;
+	}
 	public static function error ($text) {
 		return '<span class="error">' . implode(func_get_args(), ' ') . '</span>';
 	}
@@ -153,6 +157,26 @@ class QualityRatingFuncs {
 		}
 		// Nothing returned from loop, so none of the specified arguments were found
 		return $default;
+	}
+	public static function ordinal ($parser) {
+		$args = func_get_args();
+		array_shift($args);
+		$endings = array('th', 'st', 'nd', 'rd');
+		$number = '';
+		foreach ($args as $a) {
+			if (strlen($a) > 2 && strpos('0123', $a[0]) !== false && $a[1] == '=')
+				$endings[$a[0]] = substr($a, 2);
+			elseif ($number == '')
+				$number = $a;
+		}
+		$number = (int)$number;
+		if (self::in_range($number % 100, 11, 13))
+			$ending = 0;
+		elseif (self::in_range($number % 10, 1, 3))
+			$ending = $number % 10;
+		else
+			$ending = 0;
+		return $number . $endings[$ending];
 	}
 }
 
