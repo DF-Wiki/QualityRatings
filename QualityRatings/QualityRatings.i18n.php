@@ -3,17 +3,20 @@
 $messages = array();
 
 $messages['en'] = array(
-	'rater-enable-ns' => '',
-	'rater-disable-ns' => "*Special\n*File",
+    'rater-enable-ns' => '',
+    'rater-disable-ns' => "*Special\n*File",
 );
 
 $messages['qqq'] = array(
-	'rater-enable-ns' => 'List of namespaces where rating script is enabled',
-	'rater-disable-ns' => 'List of namespaces where rating script is disabled',
+    'rater-enable-ns' => 'List of namespaces where rating script is enabled',
+    'rater-disable-ns' => 'List of namespaces where rating script is disabled',
 );
 
 $QRFunctions = array(
+	'colortype',
 	'colorconvert',
+	'colorconvertto',
+	'colorfg',
 	'strlen',
 	'substr',
 	'strsplit',

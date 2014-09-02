@@ -3,7 +3,10 @@
 require_once "inc/Char.php";
 
 $QRFunctions = array(
+	'colortype',
 	'colorconvert',
+	'colorconvertto',
+	'colorfg',
 	'strlen',
 	'substr',
 	'strsplit',
@@ -49,19 +52,46 @@ class QualityRatingFuncs {
 	private static function in_range($n, $a, $b) {
 		return $n >= $a && $n <= $b;
 	}
-	public static function error ($text) {
-		return '<span class="error">' . implode(func_get_args(), ' ') . '</span>';
+	public static function error ($parser, $text /* , ... */) {
+		if ($parser !== false) {
+			$args = func_get_args();
+			array_shift($args);
+			return '<span class="error">' . implode($args, ' ') . '</span>';
+		}
+		else return false;
+	}
+	public static function colortype ($parser, $color='') {
+		global $QRColorFormats;
+		foreach ($QRColorFormats as $id => $fmt) {
+			if ($fmt['decode']($color) !== false)
+				return $id;
+		}
 	}
 	public static function colorconvert ($parser, $color='', $from='', $to='') {
 		global $QRColorFormats;
 		if (!array_key_exists($from, $QRColorFormats) || !array_key_exists($to, $QRColorFormats)) {
-			return self::error("Invalid color format");
+			return self::error($parser, "Invalid color format");
 		}
 		$decoded = $QRColorFormats[$from]['decode']($color);
 		if ($decoded === false) {
-			return self::error("Invalid $from color: '$color'");
+			return self::error($parser, "Invalid $from color: '$color'");
 		}
 		return $QRColorFormats[$to]['encode']($decoded);
+	}
+	public static function colorconvertto ($parser, $color='', $to='') {
+		$from = self::colortype($parser, $color);
+		return self::colorconvert($parser, $color, $from, $to);
+	}
+	public static function colorfg ($parser, $color='', $fmt='hex') {
+		global $QRColorFormats;
+		$rgb = self::colorconvertto(false, $color, 'rgb');
+		if ($rgb === false)
+			return self::error($parser, 'Unrecognized color');
+		$rgb = $QRColorFormats['rgb']['decode']($rgb);
+		$brightness = ($rgb[0] * 0.299) + ($rgb[1] * 0.587) + ($rgb[2] * 0.114);
+		$fg = $brightness > 160 ? '#000000' : '#ffffff';
+		return ($fmt == 'hex') ? $fg :
+			(self::colorconvert(false, $fg, 'hex', $fmt) || $fg);
 	}
 	public static function strlen ($parser, $str='') {
 		return mb_strlen($str);
@@ -158,7 +188,7 @@ class QualityRatingFuncs {
 		// Nothing returned from loop, so none of the specified arguments were found
 		return $default;
 	}
-	public static function ordinal ($parser) {
+	public static function ordinal ($parser /* , ... */) {
 		$args = func_get_args();
 		array_shift($args);
 		$endings = array('th', 'st', 'nd', 'rd');
@@ -189,7 +219,7 @@ $QRColorFormats = array(
 			$matches = array();
 			preg_match('/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/', $str, $matches);
 			array_shift($matches);
-			return $matches;
+			return (count($matches) == 3) ? $matches : false;
 		}
 	),
 	'hex' => array(
