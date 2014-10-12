@@ -1,10 +1,18 @@
-/* <nowiki> // Prevents tilde expansion
+/**
  * DF Wiki rating script
  */
-//Like Python: 'a{0}b'.format('c') == 'acb'
-String.prototype.format=function(){s=this;for(i=0;i<arguments.length;i++){s=s.replace(RegExp('\\{'+i+'\\}','g'), arguments[i])};return s};
-String.prototype.capitalize=function(){return this.slice(0,1).toUpperCase()+this.slice(1)};
-addOnloadHook(function(){jQuery(function($){
+// Similar to Python's str.format: 'a{0}b'.format('c') == 'acb'
+String.prototype.format = function() {
+	s = this;
+	for (i = 0; i < arguments.length; i++) {
+		s = s.replace(RegExp('\\{' + i + '\\}', 'g'), arguments[i]);
+	}
+	return s;
+};
+String.prototype.capitalize = function() {
+	return this.slice(0, 1).toUpperCase() + this.slice(1);
+};
+jQuery(function($){
 	var rater = {
 		version: '1.0.5',
 		namespaces: {
@@ -1124,5 +1132,4 @@ addOnloadHook(function(){jQuery(function($){
 	rater.loader = loader;
 	window.rater = rater;
 	return rater;
-});});
-// </nowiki>
+});
