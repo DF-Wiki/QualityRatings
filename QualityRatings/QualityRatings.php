@@ -8,7 +8,7 @@ $wgResourceModules['ext.QualityRatings'] = array(
 		'modules/jquery.color-2.1.0.min.js'
 	),
 	'localBasePath' => __DIR__,
-	'remoteExtPath' => 'QualityRatings',
+	'remoteExtPath' => 'dfwiki-rater/QualityRatings',
 	'messages' => array(
 		'rater-enable-ns',
 		'rater-disable-ns',
