@@ -33,6 +33,7 @@ $QRFunctions = array(
 	'sha1',
 	'md5',
 	'splitrand',
+	'randorder',
 	'randint',
 	'param',
 	'ordinal',

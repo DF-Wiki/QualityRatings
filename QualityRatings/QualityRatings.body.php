@@ -23,11 +23,13 @@ $QRFunctions = array(
 	'sha1',
 	'md5',
 	'splitrand',
+	'randorder',
 	'randint',
 	'param',
 	'ordinal',
 );
 $QRFunctionFlags = array(
+	'randorder' => SFH_OBJECT_ARGS,
 	'param' => SFH_OBJECT_ARGS,
 );
 
@@ -156,12 +158,21 @@ class QualityRatingFuncs {
 		$ch = new QualityRatings\Char\Char($id);
 		return $ch->text;
 	}
-	
+
 	public static function randint ($parser, $a, $b=1) {
 		$a = (int)$a; $b = (int)$b;
 		if ($a < $b) return mt_rand($a, $b);
 		else return mt_rand($b, $a);
 	}
+
+	public static function randorder ($parser, $frame, $args) {
+		shuffle($args);
+		foreach ($args as $i => $a) {
+			$args[$i] = $frame->expand($a);
+		}
+		return implode('', $args);
+	}
+
 	public static function param ($parser, $frame, $args) {
 		/**
 		 * #param: Returns the first template parameter found in a list of parameter names
