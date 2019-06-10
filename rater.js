@@ -739,8 +739,8 @@ jQuery(function($){
 			d = $(d);
 			rater.help.data = [];
 			for (var i = 0; i <= 5; i++) {
-				rater.help.data[i] = d.filter('h3:nth({0})'.format(i)).nextUntil('h3');
-				rater.help.data[i].splice(0,0,d.filter('h3:nth({0})'.format(i))[0]); // prepend header
+				rater.help.data[i] = d.find('h3:nth({0})'.format(i)).nextUntil('h3');
+				rater.help.data[i].splice(0,0,d.find('h3:nth({0})'.format(i))[0]); // prepend header
 			};
 			rater.help.update();
 		});
