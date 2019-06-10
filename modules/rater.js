@@ -34,8 +34,15 @@ jQuery(function($){
 	}
 
 	// Check for required definitions
-	if (!('mw' in window) || !('wgScript' in window))
-		throw ReferenceError('`mw` or `wgScript` not found. This script must be run on a working wiki!')
+	if (!('mw' in window))
+		throw ReferenceError('`mw` not found. This script must be run on a working wiki!')
+
+	var mwConfig = mw.config.get([
+		'wgCanonicalNamespace',
+		'wgPageName',
+		'wgScript',
+		'wgScriptPath',
+	]);
 
 	rater.event = $({}); //for event bindings
 
@@ -46,10 +53,10 @@ jQuery(function($){
 	function is_func(x){return !!(x&&x.call)}
 	// Page-specific data
 	rater.page = {
-		name: wgPageName.replace(/_/g,' '),
-		ns:wgCanonicalNamespace||'Main',
-		url: wgScript+'?title='+wgPageName,
-		exists:!$('#left-navigation').find('li[class*=selected]').find('a[href*=redlink]').length,
+		name: mwConfig.wgPageName.replace(/_/g,' '),
+		ns: mwConfig.wgCanonicalNamespace || 'Main',
+		url: mwConfig.wgScript + '?title=' + mwConfig.wgPageName,
+		exists: !$('#left-navigation').find('li[class*=selected]').find('a[href*=redlink]').length,
 	}
 
 	rater.is_valid_page = function(){
@@ -529,7 +536,7 @@ jQuery(function($){
 				$('<h2>').text('Incoming links').appendTo(view);
 				var ul = $("<ul>").appendTo(view);
 				for (i in o.list) { if(i in []) continue;
-					ul.append('<li><a href="{1}/{0}" target="_blank">{0}</a></li>'.format(o.list[i], wgScript));
+					ul.append('<li><a href="{1}/{0}" target="_blank">{0}</a></li>'.format(o.list[i], mwConfig.wgScript));
 				}
 				view.append('<h4>Total: {0}</h4>'.format(o.length))
 			},
@@ -559,7 +566,7 @@ jQuery(function($){
 				var tbl = $("<table>").css({width:'100%'}).append('<tr><th colspan="2">User</th><th>Edits</th></tr>').addClass('wikitable sortable').appendTo(view)
 				for (i in o) {
 					if (i in {}||!i.indexOf('total')) continue;
-					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}" target="_blank">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],wgScript))
+					tbl.append('<tr><td colspan="2"><a href="{2}/User:{0}" target="_blank">{0}</a>:</td><td>{1}</td></tr>'.format(i,o[i],mwConfig.wgScript))
 				}
 				tbl.append('<tr style="font-weight:bold"><td>Total:</td><td>{0}</td><td>{1}</td></tr>'.format(o.total,o.total_edits))
 			},
@@ -615,7 +622,7 @@ jQuery(function($){
 				$('<h2>').text('Categories').appendTo(view);
 				var ul = $("<ul>").appendTo(view);
 				for(i in o.list){if(i in []) continue;
-					ul.append('<li><a href="{1}/Category:{0}" target="_blank">{0}</a></li>'.format(o.list[i], wgScript));
+					ul.append('<li><a href="{1}/Category:{0}" target="_blank">{0}</a></li>'.format(o.list[i], mwConfig.wgScript));
 				}
 				view.append('<h4>Total: {0}</h4>'.format(o.total))
 			}
@@ -734,7 +741,7 @@ jQuery(function($){
 
 	rater.help = {view:$('<div>').css({height:'100%'})};
 	rater.help.init = function() {
-		$.get(wgScript+'/DF:Quality?action=render',function(d){
+		$.get(mwConfig.wgScript+'/DF:Quality?action=render',function(d){
 			d = $(d);
 			rater.help.data = [];
 			for (var i = 0; i <= 5; i++) {
@@ -778,7 +785,7 @@ jQuery(function($){
 		for(i in rater.metadata.urls){ if(i in {}) continue;
 			// Request result as JSON
 			var data = $.extend(rater.metadata.urls[i], {format:'json'});
-			var url = wgScriptPath + '/api.php';
+			var url = mwConfig.wgScriptPath + '/api.php';
 			loader.add(i, url, data);
 		}
 		function update_progress() {
@@ -1048,7 +1055,7 @@ jQuery(function($){
 				rater.progress.update(2,3);
 				w('Finished!\nUpdating...');
 				// Parse {{quality}} with the new rating
-				$.get(wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:wgPageName},
+				$.get(mwConfig.wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:mwConfig.wgPageName},
 				function(d){
 					rater.progress.update(3,3);
 					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
@@ -1056,7 +1063,7 @@ jQuery(function($){
 					$('.mw-normal-catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
 					var cats = d.parse.categories;
 					for (i=0;i<cats.length;i++) {
-						$('<a>').attr({href:wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' '))
+						$('<a>').attr({href:mwConfig.wgScript+'/Category:'+cats[i]['*']}).text(cats[i]['*'].replace(/_/g,' '))
 								.appendTo($("<li>").appendTo('.mw-normal-catlinks ul'));
 					}
 
@@ -1108,7 +1115,7 @@ jQuery(function($){
 			opts.summary = opts.summary.replace(/rating\s+script/gi, '[[DF:Rater|rating script]]')
 				.replace(/quality rating/gi, '[[DF:Q|quality rating]]');
 		var event = $({}); // For attaching callbacks
-		$.post(wgScriptPath+'/api.php', {action:'edit', title:opts.title, text:opts.text,
+		$.post(mwConfig.wgScriptPath+'/api.php', {action:'edit', title:opts.title, text:opts.text,
 		token:opts.token, minor:opts.minor, summary:opts.summary}, function(d){
 			event.trigger('done')
 		});
