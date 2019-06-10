@@ -50,7 +50,6 @@ jQuery(function($){
 		ns:wgCanonicalNamespace||'Main',
 		url: wgScript+'?title='+wgPageName,
 		exists:!$('#left-navigation').find('li[class*=selected]').find('a[href*=redlink]').length,
-		load_time:$('body').html().match(/<!--.*-->/g).slice(-1)[0].match(/\d+\.\d+/)[0]
 	}
 
 	rater.is_valid_page = function(){
