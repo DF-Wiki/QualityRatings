@@ -1058,7 +1058,7 @@ jQuery(function($){
 				$.get(mwConfig.wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:mwConfig.wgPageName},
 				function(d){
 					rater.progress.update(3,3);
-					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).filter(':nth(0)').contents());
+					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).find(':nth(0)').contents());
 					// Replace categories
 					$('.mw-normal-catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
 					var cats = d.parse.categories;
