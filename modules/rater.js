@@ -235,7 +235,7 @@ jQuery(function($){
 		return t;
 	};
 
-	$('body').on('click','a[href=#rater-popup-hide]',rater.popup_hide);
+	$('body').on('click','a[href="#rater-popup-hide"]',rater.popup_hide);
 
 	rater.popup.clear=function(){
 		rater.popup.box.html('').append(rater.popup.close_link);
@@ -265,7 +265,7 @@ jQuery(function($){
 	};
 	rater.box.clear()
 
-	$('body').on('click', '[href=#rater-box-top]', function(e){PD(e);
+	$('body').on('click', '[href="#rater-box-top"]', function(e){PD(e);
 		rater.frame.current_frame().parent().animate({scrollTop:0}, 400);
 	});
 
@@ -291,9 +291,9 @@ jQuery(function($){
 		rater.resume_link.hide();
 		rater.win.fadeIn(300);
 	};
-	$('body').on('click','a[href=#rater-cancel]',rater.cancel);
-	$('body').on('click','a[href=#rater-hide]',rater.hide);
-	$('body').on('click','a[href=#rater-resume]',rater.resume);
+	$('body').on('click','a[href="#rater-cancel"]',rater.cancel);
+	$('body').on('click','a[href="#rater-hide"]',rater.hide);
+	$('body').on('click','a[href="#rater-resume"]',rater.resume);
 
 	// Set up links
 	rater.show_link = $("<li>").append($('<span>').append(
@@ -328,8 +328,8 @@ jQuery(function($){
 		rater.begin_tests();
 		rater.active=true;
 	};
-	$('body').on('click', 'a[href=#rater-invoke]', rater.invoke);
-	$('body').on('click', 'a[href=#rater-force]', function(e){rater.invoke(e,1)});
+	$('body').on('click', 'a[href="#rater-invoke"]', rater.invoke);
+	$('body').on('click', 'a[href="#rater-force"]', function(e){rater.invoke(e,1)});
 
 	rater.about = function(e){PD(e);
 		var prevf=rater.frame.current;
@@ -343,7 +343,7 @@ jQuery(function($){
 			rater.frame.change(prevf);
 		}).appendTo(f);
 	};
-	$('body').on('click','a[href=#rater-about]',rater.about);
+	$('body').on('click','a[href="#rater-about"]',rater.about);
 
 	/*
 	 * nonstd = Non-standard
@@ -407,9 +407,9 @@ jQuery(function($){
 	rater.nonstd.init_link = $('<a>').text('Advanced options').attr({href:'#rater-nonstd-init'});
 	rater.nonstd.cancel_link = $('<a>').text('Back').attr({href:'#rater-nonstd-cancel'}).css({color:'red', position:'absolute', right:0, top:'1em'});
 	$('body')
-		.on('click','a[href=#rater-nonstd-init]', rater.nonstd.init)
-		.on('click','a[href=#rater-nonstd-cancel]', rater.nonstd.cancel)
-		.on('click','a[href=#rater-nonstd-select]', rater.nonstd.select)
+		.on('click','a[href="#rater-nonstd-init"]', rater.nonstd.init)
+		.on('click','a[href="#rater-nonstd-cancel"]', rater.nonstd.cancel)
+		.on('click','a[href="#rater-nonstd-select"]', rater.nonstd.select)
 	rater.event.bind('results-displayed', function(){rater.nonstd.init_link.appendTo(rater.box)})
 
 	/*
@@ -947,7 +947,7 @@ jQuery(function($){
 		rater.select.draw();
 		$('.topicon').css({backgroundColor:'#ff3'}).delay(300).animate({backgroundColor:'#fff'}, 700);
 	};
-	$('body').on('click','a[href=#rater-override]',rater.select.init);
+	$('body').on('click','a[href="#rater-override"]',rater.select.init);
 
 	rater.select.draw = function(){
 		$('.topicon > span').hide();
@@ -1000,9 +1000,9 @@ jQuery(function($){
 		rater.win.arrow.stop().animate({left: rater.win.arrow.data('default-left')}, 250);
 	};
 
-	$('body').on('click','a[href=#rater-select-reset]',rater.select.reset);
-	$('body').on('click','a[href=#rater-select-cancel]',rater.select.cancel);
-	$('body').on('click','a[href=#rater-select-submit]',function(e){PD(e);
+	$('body').on('click','a[href="#rater-select-reset"]',rater.select.reset);
+	$('body').on('click','a[href="#rater-select-cancel"]',rater.select.cancel);
+	$('body').on('click','a[href="#rater-select-submit"]',function(e){PD(e);
 		rater.win.arrow.stop().animate({left: rater.win.arrow.data('default-left')}, 250);
 		rater.submit_rating();
 	});
@@ -1012,7 +1012,7 @@ jQuery(function($){
 		rater.select.current = rater.suggested_rating;
 		rater.submit_rating();
 	};
-	$('body').on('click','a[href=#rater-save]', rater.submit_suggested);
+	$('body').on('click','a[href="#rater-save"]', rater.submit_suggested);
 
 	rater.update_text = function(text, quality){
 		// Updates {{quality}} in given wikitext
