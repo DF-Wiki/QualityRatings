@@ -14,7 +14,7 @@ String.prototype.capitalize = function() {
 };
 jQuery(function($){
 	var rater = {
-		version: '1.0.6',
+		version: '1.0.7',
 		namespaces: {
 			enable: [],
 			disable: [],
