@@ -271,6 +271,7 @@ jQuery(function($){
 
 	rater.cancel = function(e){
 		PD(e);
+		$('#bodyContent').css('z-index','');
 		rater.show_link.removeClass('selected');
 		rater.overlay.stop(1,1).fadeOut(300);
 		rater.win.stop(1,1).fadeOut(300);
@@ -310,6 +311,7 @@ jQuery(function($){
 	rater.active=false;
 	rater.invoke = function(e, force){PD(e);
 		if(rater.active) return;
+		$('#bodyContent').css('z-index','auto');
 		rater.win.stop(1,1).fadeIn(300);
 		rater.win.arrow.css({left:rater.win.arrow.position().left});
 		rater.win.arrow.data('default-left', rater.win.arrow.css('left'));
