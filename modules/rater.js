@@ -299,7 +299,7 @@ jQuery(function($){
 	rater.show_link = $("<li>").append($('<span>').append(
 		$("<a href='#rater-invoke'>").text('Rate')
 	));
-	if (rater.page_state()[0] != 'disabled') {
+	if (rater.is_valid_page() || rater.rating_exists) {
 		$("#left-navigation #p-namespaces ul:nth(0)").append('<li><span><a></a></span></li>');
 		$("#left-navigation #p-namespaces ul:nth(0)").append(rater.show_link);
 	}
