@@ -145,7 +145,7 @@ jQuery(function($){
 	//See http://jsfiddle.net/AN9qR/4/
 	var win_height=$(window).height()/2;
 	var win_width = $('#bodyContent').width()*0.8;
-	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'1.5em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
+	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'0.5em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
 		.hide().appendTo('#bodyContent');
 
 	rater.win.filler = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:0, left:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10002, overflow:'hidden', 'border-radius':4})
@@ -1072,13 +1072,13 @@ jQuery(function($){
 					$('.mw-normal-catlinks li a:hidden').remove();
 					$('.mw-normal-catlinks li:empty').remove();
 
-					rater.progress.update(5,4);
+					rater.progress.update(5, 4);
 					rater.cancel();
-					jsMsg('Rated article <b>'+rating+'</b>');
-					var old_title=document.title;
-					document.title='Rated article '+rating
-					setTimeout(function(){
-						document.title=old_title
+					mw.notify('Rated article ' + rating);
+					var old_title = document.title;
+					document.title='Rated article ' + rating;
+					setTimeout(function() {
+						document.title = old_title
 					}, 2500);
 					loader.reset()
 				});
