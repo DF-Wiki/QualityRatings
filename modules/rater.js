@@ -29,8 +29,9 @@ jQuery(function($){
 		},
 	};
 
-	for (i in rater.namespaces) { if (i in {}) continue;
-		rater.namespaces[i] = ('\n' + mw.message('rater-' + i + '-ns').parser()).replace(/\n\*\s*/g, '\n').replace(/^\n/, '').split('\n');
+	for (ns in rater.namespaces) {
+		if (ns in {}) continue;
+		rater.namespaces[ns] = ('\n' + mw.message('rater-' + ns + '-ns').parser()).replace(/\n\*\s*/g, '\n').replace(/^\n/, '').split('\n');
 	}
 
 	// Check for required definitions
@@ -145,7 +146,7 @@ jQuery(function($){
 	//See http://jsfiddle.net/AN9qR/4/
 	var win_height=$(window).height()/2;
 	var win_width = $('#bodyContent').width()*0.8;
-	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'0.5em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
+	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'2em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
 		.hide().appendTo('#bodyContent');
 
 	rater.win.filler = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:0, left:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10002, overflow:'hidden', 'border-radius':4})
@@ -313,7 +314,6 @@ jQuery(function($){
 		if(rater.active) return;
 		$('#bodyContent').css('z-index','auto');
 		rater.win.stop(1,1).fadeIn(300);
-		rater.win.arrow.css({left:rater.win.arrow.position().left});
 		rater.win.arrow.data('default-left', rater.win.arrow.css('left'));
 		rater.frame.change('main');
 		rater.box.clear();
