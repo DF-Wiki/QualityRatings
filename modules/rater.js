@@ -14,7 +14,7 @@ String.prototype.capitalize = function() {
 };
 jQuery(function($){
 	var rater = {
-		version: '1.0.7',
+		version: '1.0.8',
 		namespaces: {
 			enable: [],
 			disable: [],
@@ -29,8 +29,9 @@ jQuery(function($){
 		},
 	};
 
-	for (i in rater.namespaces) { if (i in {}) continue;
-		rater.namespaces[i] = ('\n' + mw.message('rater-' + i + '-ns').parser()).replace(/\n\*\s*/g, '\n').replace(/^\n/, '').split('\n');
+	for (ns in rater.namespaces) {
+		if (ns in {}) continue;
+		rater.namespaces[ns] = ('\n' + mw.message('rater-' + ns + '-ns').parser()).replace(/\n\*\s*/g, '\n').replace(/^\n/, '').split('\n');
 	}
 
 	// Check for required definitions
@@ -145,7 +146,7 @@ jQuery(function($){
 	//See http://jsfiddle.net/AN9qR/4/
 	var win_height=$(window).height()/2;
 	var win_width = $('#bodyContent').width()*0.8;
-	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'0.5em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
+	rater.win = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:'2em', right:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10000, 'border-radius':4, border:'1px solid #ccb', 'box-shadow':'0 0 6px rgba(128,128,128,.6)', overflow:'visible',padding:4})
 		.hide().appendTo('#bodyContent');
 
 	rater.win.filler = $('<div>').css({width:win_width+8, height:win_height+8, 'font-size':'1.25em', top:0, left:0, position:'absolute', 'background-color':'#fbfbf9', 'z-index':10002, overflow:'hidden', 'border-radius':4})
@@ -156,12 +157,12 @@ jQuery(function($){
 	rater.win.arrow = $("<span>").css({display:'block', position:'absolute', 'background-color':'#fbfbf9', height:'1.5em', width:'1.5em', top:'-.75em', right:'1.5em', 'z-index':10001, '-webkit-transform':'rotate(45deg)', transform:'rotate(45deg)', 'box-shadow':'0 0 6px rgba(128,128,128,0.6)', border:'1px solid #ccb'})
 		.prependTo(rater.win);
 	rater.rating_exists=true;
-	if(!$('.topicon').length){ // No current/visible quality rating
+	if(!$('#page-quality-rating').length){ // No current/visible quality rating
 		rater.rating_exists=false;
 		rater.win.arrow.hide();
 		//create a blank one
-		$('<div>').addClass('topicon').css({right:10}).appendTo('#bodyContent');
-		$('.topicon').append($("<span>"));
+		$('<div>').attr('id', 'page-quality-rating').appendTo('#bodyContent');
+		$('#page-quality-rating').append($("<span>"));
 	}
 
 	rater.about_link = $('<a>').text('About').attr('href','#rater-about').css({'float':'right',
@@ -283,7 +284,7 @@ jQuery(function($){
 	rater.in_progress = false;
 	rater.hide = function(e){PD(e);
 		rater.win.fadeOut(300);
-		rater.resume_link = $('<a>').attr({href:'#rater-resume'}).text('Continue rating').appendTo('.topicon').css({padding:'0 0.5em'});
+		rater.resume_link = $('<a>').attr({href:'#rater-resume'}).text('Continue rating').appendTo('#page-quality-rating').css({padding:'0 0.5em'});
 		rater.in_progress = true;
 	};
 	rater.resume = function(e){PD(e);
@@ -304,7 +305,7 @@ jQuery(function($){
 		$("#left-navigation #p-namespaces ul:nth(0)").append(rater.show_link);
 	}
 
-	rater.show_link_topicon = $('<a>').attr({href:'#rater-invoke',title:"Change this page's rating"}).text('Change').appendTo('.topicon').css({'padding-left':6});
+	rater.show_link_topicon = $('<a>').attr({href:'#rater-invoke',title:"Change this page's rating"}).text('Change').appendTo('#page-quality-rating').css({'padding-left':6});
 	if(!rater.rating_exists) rater.show_link_topicon.hide()
 
 	// True when the rater box has been opened but not closed (may be hidden)
@@ -313,7 +314,6 @@ jQuery(function($){
 		if(rater.active) return;
 		$('#bodyContent').css('z-index','auto');
 		rater.win.stop(1,1).fadeIn(300);
-		rater.win.arrow.css({left:rater.win.arrow.position().left});
 		rater.win.arrow.data('default-left', rater.win.arrow.css('left'));
 		rater.frame.change('main');
 		rater.box.clear();
@@ -945,15 +945,15 @@ jQuery(function($){
 		rater.select.current=rater.suggested_rating.toLowerCase();
 		rater.select.view.appendTo(rater.select.frame);
 		rater.select.draw();
-		$('.topicon').css({backgroundColor:'#ff3'}).delay(300).animate({backgroundColor:'#fff'}, 700);
+		$('#page-quality-rating').css({backgroundColor:'#ff3'}).delay(300).animate({backgroundColor:'#fff'}, 700);
 	};
 	$('body').on('click','a[href="#rater-override"]',rater.select.init);
 
 	rater.select.draw = function(){
-		$('.topicon > span').hide();
+		$('#page-quality-rating').hide();
 		var c, selected, a,
 			view=rater.select.view,
-			topview=$('<span>').appendTo('.topicon');
+			topview=$('<span>').appendTo('#page-quality-rating');
 		view.html(''); topview.html('');
 		$("<span>").text('Select rating: ').appendTo(topview);
 		list=$('<span>').css({'font-size':'.8em'}).appendTo(topview)
@@ -982,7 +982,7 @@ jQuery(function($){
 		rater.help.update(selected&&selected.id||0);
 		// Animate arrow
 		rater.win.arrow.stop().animate({
-			left: $('.topicon .active:visible').offset().left - rater.win.inner.offset().left + $('.topicon .active:visible').width()/2
+			left: $('#page-quality-rating .active:visible').offset().left - rater.win.inner.offset().left + $('#page-quality-rating .active:visible').width()/2
 		}, 250);
 	};
 
@@ -995,7 +995,7 @@ jQuery(function($){
 
 	rater.select.cancel = function(e){PD(e);
 		rater.select.reset();
-		$('.topicon > span').hide().filter(':nth(0)').show();
+		$('#page-quality-rating').hide().filter(':nth(0)').show();
 		rater.frame.change('main');
 		rater.win.arrow.stop().animate({left: rater.win.arrow.data('default-left')}, 250);
 	};
@@ -1060,7 +1060,7 @@ jQuery(function($){
 				$.get(mwConfig.wgScriptPath+'/api.php',{action:'parse',text:'{{Quality|'+rating+'|~~~~~}}', format:'json',title:mwConfig.wgPageName},
 				function(d){
 					rater.progress.update(3,3);
-					$('.topicon > *').hide().parent().prepend($(d.parse.text['*']).find(':nth(0)').contents());
+					$('#page-quality-rating > *').hide().parent().prepend($(d.parse.text['*']).find(':nth(0)').contents());
 					// Replace categories
 					$('.mw-normal-catlinks ul:nth(0) li a:contains(Quality Articles)').hide();
 					var cats = d.parse.categories;
